@@ -1,154 +1,125 @@
-# json-transmute
-Transmute (convert) javscript object data into common denominator formats defined via JSON data maps.  Includes support for [JSONPath](https://github.com/s3u/JSONPath) expressions.
+# Json-Transmute - Simplify Your Data
 
-## Transmute Example
+Data returned by the multitude of services we consume is often needlessly complex for our own individual needs - particularly when it is first converted from XML.  Simplify your data by defining JSON data maps that return only the data you need in common denominator formats.  Includes support for [JSONPath](https://github.com/s3u/JSONPath) expressions.
+
+## Example
 
 ```javascript
-var transmute = require('json-transmute'),
-    scope     = require('scope.json'),
-    map       = require('map.json');
-    
-console.log(JSON.stringify(transmute(scope, map), null, 2));
-```
+var transmute = require('../index.js');
 
-### Scope.json
-
-The following example depicts Scope (source) data returned from an the Amazon MWS GetMyPriceForASINResult API call.  As Amazon returns this data in XML format, it was first converted to JSON via [rapidx2j](https://github.com/damirn/rapidx2j).  In this example, XML attributes were prefixed with '@' during the JSON conversion process.
-
-```json
-{
-  "@xmlns": "http://mws.amazonservices.com/schema/Products/2011-10-01",
-  "GetMyPriceForSKUResult": {
-    "@SellerSKU": "00-0000-0000", 
-    "@status": "Success",
-    "Product": {
-      "@xmlns": "http://mws.amazonservices.com/schema/Products/2011-10-01",
-      "@xmlns:ns2": "http://mws.amazonservices.com/schema/Products/2011-10-01/default.xsd",
-      "Identifiers": {
-        "MarketplaceASIN": {
-          "MarketplaceId": "MMMMMMMMMMMMM",
-          "ASIN": "AAAAAAAAAA"
-        }
-      },
-      "Offers": {
-        "Offer": {
-          "BuyingPrice": {
-            "LandedPrice": {
-              "CurrencyCode": "USD",
-              "Amount": 100.00
-            },
-            "ListingPrice": {
-              "CurrencyCode": "USD",
-              "Amount": 100.00
-            },
-            "Shipping": {
-              "CurrencyCode": "USD",
-              "Amount": 0
-            }
-          },
-          "RegularPrice": {
-            "CurrencyCode": "USD",
-            "Amount": 200.00
-          },
-          "FulfillmentChannel": "MERCHANT",
-          "ItemCondition": "New",
-          "ItemSubCondition": "New", 
-          "SellerId": "SSSSSSSSSSSSSS",
-          "SellerSKU": "00-0000-0000"
-        }
-      }
-    }
-  },
-  "ResponseMetadata": {
-    "RequestId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  }
-}
-```
-
-### Map.json
-
-JSON-Transmute generates a javascript object modeled after the structure outlined in a JSON Map (as in the example below).  Both Map Keys and Map Key Values are first checked for inclusion within Scope (source data).  If a matching Key is found within Scope, the Map Key or Key Value is replaced with the lookup value from Scope.  If no match is found, the Map Key / Key Value is copied to the target object verbatim.  You may enclose key or key values in single quotes (') to avoid key / value replacement.  Deep references may be achieved via dot '.' notation, array '[]' reference, as well as JSONPath expression.
-
-Scope lookups occur at search-level (by default the top-level) and are not recursive.  The search-level of the Scope data object may be altered / traversed in one of two ways: (1) via the reserved '@path' key, where the key value specifies an expression for identifying the new search-level of scope for all sibling and child elements, or (2) via curly braces or bracket ({} or []) notation in the Map Key, where the contents of the braces or brackets specify an expression for identifying the new root-level of scope for all child elements.  Curly braces and brackets indicate that the child element should be formatted as an object or an array respectively.
-
-Both Map Keys and Key Values may also include expressions which are resolved by json-transmute prior to building the target object.  Expressions may include multiple Scope data key references as well as mutator functions and JSONPath expressions.
-
-```json
-{
-  "GetMyPriceForSKU": {
-    "@path": "$..GetMyPriceForSKUResult",
-    "sku": "_attr.SellerSKU",
-    "asin": "Product.Identifiers.MarketplaceASIN.ASIN",
-    "offers{$..Offer}": {
-      "ItemCondition" : {
-        "ItemSubCondition": {
-          "ListingPrice": "BuyingPrice.ListingPrice",
-          "Shipping": "BuyingPrice.Shipping",
-          "IsFulfilledByAmazon": "FulfillmentChannel | replace('^MERCHANT$', 'false', 'true')"
-        }
+var scope = {
+  "Product": {
+    "title": "ACME super soaker",
+    "price": "25.00",
+    "variants": [
+      { "color": "red", "stock": "5" },
+      { "color": "blue", "stock": "3" },
+      { "color": "green", "stock": "0" }
+    ],
+    "shipping": {
+      "methods": {
+        "nextDay": { "name": "Next Day Air", "cost": "45.00" },
+        "secondDay": { "name": "Second Day Air", "cost": "30.00" },
+        "economy": { "name": "Free Economy Shipping", "cost": "0.00" }
       }
     }
   }
-}
-```
+};
 
-#### Breaking It Down
 
-The first line of our Map simply defines key under which our object will be built.
-
-```json
-  "GetMyPriceForSKU": {
-```
-
-The next line updates the default search-level for Scope.  This is added as a convenience to avoid writing out verbose deep references.  The dollar sign '$' at the beginning of the expression indicates that this is a JSONPath expression.  The new Scope search-level will apply to all sibling and child elements unless additional Scope search-level modifiers are specified.
-
-```json
-    "@path": "$..GetMyPriceForSKUResult",
-```
-
-The following two lines are scope data references using deep reference dot notation.  Note that Scope lookups are case sensitive.  The 'sku' and 'asin' keys are not present in Scope and will be copied verbatim to the target object.
-
-```json
-    "sku": "_attr.SellerSKU",
-    "asin": "Product.Identifiers.MarketplaceASIN.ASIN",
-```
-
-The final section utilizes curly brace notation to further modify Scope search-level.  The curly braces specify that the child element should be an object, and the JSONPath expression '$..Offer' contained within the brackets changes Scope search-level for all child elements.  Note that 'ItemCondition' as well as 'ItemSubCondition' are present within Scope and will therefor be replaced with the corresponding Scope key value.
-
-In this section we also implement a mutator function in determining the value for the 'IsFulfilledByAmazon' key.  Mutator functions are invoked by placing a pipe '|' delimeter after a Scope data reference and then further followed by a mutator function call.  Mutator functions may be 'piped' to additional mutator functions in the same way any number of times.  Mutator function parameters may be passed as Scope data references, or as static values if enclosed in single quotes (').
-
-```json
-    "offers{$..Offer}": {
-      "ItemCondition" : {
-        "ItemSubCondition": {
-          "ListingPrice": "BuyingPrice.ListingPrice",
-          "Shipping": "BuyingPrice.Shipping",
-          "IsFulfilledByAmazon": "FulfillmentChannel | replace('^MERCHANT$', 'false', 'true')"
-        }
-      }
-    }
-```
-
-### Target Object (Final Output)
-
-```json
-{
-  "GetMyPriceForSKU": {
-    "asin": "AAAAAAAAAA",
-    "offers": {
-      "New": {
-        "New": {
-          "ListingPrice": 100,
-          "Shipping": 0,
-          "IsFulfilledByAmazon": "false"
-        }
-      }
-    }
+var map = {
+  "productArr[Product.variants]": {
+    "title": "^Product.title",
+    "price": "^Product.price",
+    "'color'": "color",
+    "inStock": "stock | bool"
   }
-}
+};
+
+var simpleData = transmute(scope, map);
+
+// {
+//   "productArr": [
+//     {
+//       "title": "ACME super soaker",
+//       "price": "25.00",
+//       "color": "red",
+//       "inStock": true
+//     },
+//     {
+//       "title": "ACME super soaker",
+//       "price": "25.00",
+//       "color": "blue",
+//       "inStock": true
+//     },
+//     {
+//       "title": "ACME super soaker",
+//       "price": "25.00",
+//       "color": "green",
+//       "inStock": false
+//     }
+//   ]
+// }
 ```
 
+## Scope
 
+Only the root level of the Scope object is checked for map references by default.  Modify the scope by specifying the reserved '@path' key -- '@path' key values are expressions that modify Scope for all siblings and child elements.
 
+```javascript
+var map = {
+  "@path": "Product",
+  "'title'": "title"
+};
 
+// { "title": "ACME super soaker" }
+```
+
+Alternatively you may use Curly Brace or Bracket Notation which result in the generation of a child object or array respectively.  The expression included within braces or brackets modifies Scope for all child elements.
+
+### Bracket Notation
+
+```javascript
+map = { 
+  "shipping[Product.shipping.options]": "$..name" 
+};
+
+// {
+//   "shipOptions": [
+//     "Next Day Air",
+//     "Second Day Air",
+//     "Free Economy Shipping"
+//   ]
+// }
+```
+
+### Brace Notation
+
+```javascript
+map = { 
+  "freeshipping{Product.shipping.options}": "economy" 
+};
+
+// {
+//   "economy": {
+//     "name": "Free Economy Shipping",
+//     "cost": "0.00"
+//   }
+// }
+```
+
+## Filter Functions
+
+Function              | Description
+----------------------|------------
+add(x1, x2, ..xn)     | Add two or more values
+and(x1, x2, ..xn)     | Boolean AND result of two or more values
+array(x1, x2, ..xn)   | Array format two or more values
+bool(x1)              | Boolean format a piped value
+concat(x1, x2, ..xn)  | Concatenate two or more values
+count(x1)             | Count the number of keys, values, or characters in an object, array, or string
+decrement(x1)         | Reduce an integer value by 1
+default(x1)           | Provide a default alternative value
+filter(x1, x2, x3)    | Filter an array of objects where element x1 is tested against value x2, and operator x3 is one of: 'EQ', 'NEQ', 'GT', 'GTE', 'LT', 'LTE'
+float(x1)             | Float format a piped value with precision x1
 
