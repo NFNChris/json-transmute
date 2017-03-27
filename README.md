@@ -71,7 +71,6 @@ Expressions allow us to extract data from our Scope object (source data) and tra
 
 Operator|Example       | Expression Handling
 --------|--------------|------------
-
 '|'expr' | Not evaluated
 ^|^expr | Evaluated against Scope at the root / top level
 $|$expr | [JSONPath](https://github.com/s3u/JSONPath) expression
