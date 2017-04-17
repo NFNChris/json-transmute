@@ -5,10 +5,9 @@ Simplify your code (and your data) by defining JSON data maps that return only t
 [![npm package](https://nodei.co/npm/json-transmute.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/json-transmute/)
 
 [![Build status](https://img.shields.io/travis/NFNChris/json-transmute/master.svg?style=flat-square)](https://travis-ci.org/NFNChris/json-transmute)
-[![Coverage](https://img.shields.io/codecov/c/github/json-transmute/json-transmute.svg?style=flat-square)](https://codecov.io/github/request/request?branch=master)
-[![Coverage](https://img.shields.io/coveralls/json-transmute/json-transmute.svg?style=flat-square)](https://coveralls.io/r/request/request)
-[![Dependency Status](https://img.shields.io/david/json-transmute/json-transmute.svg?style=flat-square)](https://david-dm.org/request/request)
-[![Known Vulnerabilities](https://snyk.io/test/npm/json-transmute/badge.svg?style=flat-square)](https://snyk.io/test/npm/request)
+[![Coverage Status](https://coveralls.io/repos/github/NFNChris/json-transmute/badge.svg?branch=master)](https://coveralls.io/github/NFNChris/json-transmute?branch=master)
+[![Dependency Status](https://david-dm.org/NFNChris/json-transmute.svg)](https://david-dm.org/NFNChris/json-transmute.svg)
+[![Known Vulnerabilities](https://snyk.io/test/github/nfnchris/json-transmute/badge.svg)](https://snyk.io/test/github/nfnchris/json-transmute)
 
 ## Install
 
