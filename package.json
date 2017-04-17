@@ -4,7 +4,9 @@
   "description": "Transmute javscript object data into common denominator formats defined via JSON",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "cover": "istanbul cover _mocha",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -24,10 +26,12 @@
     "url": "https://github.com/NFNChris/json-transmute/issues"
   },
   "homepage": "https://github.com/NFNChris/json-transmute#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.2.0"
+    "coveralls": "^2.13.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "mocha-lcov-reporter": "^1.3.0"
   }
 }
