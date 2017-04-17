@@ -1,0 +1,19 @@
+{
+  "Product": {
+    "title": "ACME super soaker",
+    "price": "25.00",
+    "variants": [
+      { "color": "red", "stock": "5" },
+      { "color": "blue", "stock": "3" },
+      { "color": "green", "stock": "0" }
+    ],
+    "shipping": {
+      "options": {
+        "nextDay": { "name": "Next Day Air", "cost": "45.00" },
+        "secondDay": { "name": "Second Day Air", "cost": "30.00" },
+        "economy": { "name": "Free Economy Shipping", "cost": "0.00" }
+      }
+    }
+  }
+}  
+  

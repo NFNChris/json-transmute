@@ -1,6 +1,6 @@
-# Json-Transmute - Simplify Your Data
+# Json-Transmute - Simplify Your Code
 
-Data returned by the multitude of services we consume is often needlessly complex for our own individual needs - particularly when it is first converted from XML.  Simplify your data by defining JSON data maps that return only the data you need in common denominator formats.  Includes support for [JSONPath](https://github.com/s3u/JSONPath) expressions.
+Simplify your code (and your data) by defining JSON data maps that return only the data you need in common denominator formats.
 
 ## Install
 
@@ -65,7 +65,7 @@ var simpleData = transmute(scope, map);
 ```
 ## Expressions
 
-Expressions allow us to extract data from our Scope object (source data) and transform / restructure it into our target data structure via JSON mappings.  Expressions may be used within both map keys and values similarly, with the exception that expressions within keys support additional Scope Modifiers (more on that in the next section).
+Expressions enable us to extract data from our Scope object (source data) and transform / restructure it into our target data structure via JSON mappings.  Expressions may be used within both map keys and values similarly, with the exception that expressions within keys support additional Scope Modifiers (more on that in the next section).
 
 ### Operators
 
@@ -73,26 +73,59 @@ Operator|Example       | Expression Handling
 --------|--------------|------------
 '|'expr' | Not evaluated
 ^|^expr | Evaluated against Scope at the root / top level
-$|$expr | [JSONPath](https://github.com/s3u/JSONPath) expression
+.|expr1.expr2 | Chainable direct child element selector
+&#124;|expr1 &#124; expr2 | Chainable filter processing
 []|expr1[expr2] | __**Value Only**__ Array element (expr2) selector
 []|expr1[expr2] | __**Key Only**__ Scope modifier (expr2) for child array
 {}|expr1{expr2} | __**Key Only**__ Scope modifier (expr2) for child object
-{{}}|{{expr}} | Expression delimiter -- allows for {{expr1}}{{expr2}}{{exprx}}
-` | expr1 expr2 | Expression delimieter
+{{}}|{{expr1}}{{expr2}} | Expression delimiter
+__space__ | expr1 expr2 | Expression delimieter
 
 ### Filter Functions
 
+Filter function static parameters (even numerics) must be enclosed in single quotes `'` to avoid the parser attempting to resolve them as key values and ultimately returning `undefined`.
 
-## Reserved Keys
-
-
-
-### Examples
-
+Function                        | Description
+--------------------------------|------------
+add(x1, x2, ..xn) | Add one or more values to a piped value
+and(x1, x2, ..xn) | Boolean AND result of a piped value and one or more additional parameter values
+array(x1, x2, ..xn) | Return an array containing the piped value and one or more additional parameter values
+bool | Boolean format a piped value
+concat(x1, x2, ..xn) | Return a string catenation of a piped value combined with one or more additional parameter values
+count | Count the number of keys, values, or characters in a piped object, array, or string
+date(x1) | Date format a piped value where x1 is one of: 'unix', 'javascript', 'json' (default)
+decrement | Reduces piped value by 1
+default(x1) | Returns x1 if the piped value is falsey
+divide(x1, x2, ..xn) | Divide one or more values from a piped value
+eq(x1) | Returns true if piped value == x1
+filter(x1, x2, x3) | Filter a piped array of objects to include only those elements having a key x1 value that tests x2: ">", ">=", "=", "<=", or "!=" relative to x3
+float(x1) | Float format a piped value with precision x1 (or 2 if x1 is not specified)
+gt(x1) | Returns true if piped value is greater than value x1
+if(x1, x2) | Returns x1 if piped value is true, otherwise returns x2
+increment | Increases piped value by 1
+int | Integer format a piped value
+join(x1) | Joins array elements from a piped value together into a string delimited by x1 (or `,` if x1 is not specified)
+lt(x1) | Returns true if piped value is less than value x1
+lowercase | Returns `.toLowerCase()` of the piped string
+multiply(x1, x2, ..xn) | Multiply one or more values with a piped value
+not(x1) | Returns the boolean opposite of x1
+or(x1, x2, ..xn) | Boolean OR result of a piped value and one or more additional parameter values
+pluck(x1) | Returns an array of key values from a piped array of objects having x1 as a key
+pop | Returns the last element in an array
+push(x1, x2, ..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
+reduce(x1, x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` subtract(x1, x2, ..xn) | Subtract one or more values from a piped value
+property for "longest" and "shortest" x2 values.  Omit parameter x1 for non-object array elements (e.g. strings)
+replace(x1, x2) | Returns `.replace(x1, x2)` of the piped string
+uppercase | Returns `.toUpperCase()` of the piped string
+values | Formats piped value as an array. Objects are converted to an array of key values
 
 ## Scope Modifiers
 
-Only the root level of the Scope object is checked for map references by default.  Modify the scope by specifying the reserved `@path` or `@root` key.  A  `@path` key expression modifies Scope for all siblings and child elements.
+Only the root level of the Scope object is checked for map references by default.  Modify the scope by specifying the reserved `@path` or `@root` key.  
+
+### @path
+
+A `@path` key expression modifies Scope for all siblings and child elements.
 
 ```javascript
 var map = {
@@ -103,55 +136,53 @@ var map = {
 // { "title": "ACME super soaker" }
 ```
 
+### @root
+
+A `@root` key expression modifies the default Root Scope for all siblings and child elements.  Subsequent (sibling and child element) use of the `^` operator will resolve expressions against the new root scope.
+
+```javascript
+var map = {
+  "@root": "Product",
+  "'title'": "^title"
+};
+
+// { "title": "ACME super soaker" }
+```
+
 Alternatively you may use Curly Brace or Bracket Notation which result in the generation of a child object or array respectively.  The expression included within braces or brackets modifies Scope for all child elements.
 
-### Bracket Notation
+### [] Bracket Reserved Key Pattern Notation
 
 ```javascript
 map = { 
-  "shipping[Product.shipping.options]": "$..name" 
+  "variantColors[Product.variants]": {
+    "'color'": "color"
+  }
 };
 
 // {
-//   "shipOptions": [
-//     "Next Day Air",
-//     "Second Day Air",
-//     "Free Economy Shipping"
+//   "variantColors": [
+//     { "color": "red" },
+//     { "color": "blue" },
+//     { "color": "green" }
 //   ]
 // }
 ```
 
-### Brace Notation
+### {} Brace Reserved Key Pattern Notation
 
 ```javascript
 map = { 
-  "freeshipping{Product.shipping.options}": "economy" 
+  "variantColor[Product.variants]": {
+    "'color'": "color"
+  }
 };
 
 // {
-//   "freeshipping": {
-//     "name": "Free Economy Shipping",
-//     "cost": "0.00"
+//   "variantColor": { 
+//     "color": "green"
 //   }
 // }
 ```
 
-## Operators
-
-## Filter Functions
-
-Function              | Description
-----------------------|------------
-add(x1, x2, ..xn)     | Add two or more values
-and(x1, x2, ..xn)     | Boolean AND result of two or more values
-array(x1, x2, ..xn)   | Array format two or more values
-bool(x1)              | Boolean format a piped value
-concat(x1, x2, ..xn)  | Concatenate two or more values
-count(x1)             | Count the number of keys, values, or characters in an object, array, or string
-decrement(x1)         | Reduce an integer value by 1
-default(x1)           | Provide a default alternative value
-filter(x1, x2, x3)    | Filter an array of objects where element x1 is tested against value x2, and operator x3 is one of: 'EQ', 'NEQ', 'GT', 'GTE', 'LT', 'LTE'
-float(x1)             | Float format a piped value with precision x1
-
-## More Expression Examples
 

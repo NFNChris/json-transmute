@@ -1,22 +1,19 @@
-var jpath = require('JSONPath'),
-    moment = require('moment');        
-
 module.exports = function(scope, map) {
-  return process(scope, map);
+  return transmute(scope, map);
 }
 
-function process(scope, map, target, rootScope) {
+function transmute(scope, map, target, rootScope) {
   target    = target    || {};
   rootScope = rootScope || scope;
-
-  if ('@path' in map) {
-    scope = resolve(map['@path'], scope, rootScope).val;
-  }
   
   if ('@root' in map) {
     rootScope = resolve(map['@root'], rootScope, rootScope).val;
   }
 
+  if ('@path' in map) {
+    scope = resolve(map['@path'], scope, rootScope).val;
+  }
+  
   /** Ensure array format for scope */
   var results = Array.isArray(scope) ? scope : [ scope ];
 
@@ -30,9 +27,9 @@ function process(scope, map, target, rootScope) {
       
       /** Recursively process object key values */
       if (typeof map[key] === 'object') {
-        process(opts.scope, map[key], childVal, rootScope);
+        transmute(opts.scope, map[key], childVal, rootScope);
       } else {
-        childVal = resolve(map[key], result, rootScope).val;
+        childVal = resolve(map[key], opts.scope, rootScope).val;
       }
       
       assign(Array.isArray(target) ? child : target, childVal, opts);
@@ -90,7 +87,7 @@ function resolve(expr, scope, rootScope, isKey) {
           childScope = resolve(token.opts[0], scope, rootScope).val;
         }
       case 'lookup':
-        result = token.root ? rootScope : scope;      
+        result = token.root ? rootScope : scope; 
         token.val.split('.').some(function(key) {
           if (typeof result === 'object' && key in result) {
             result = result[key];
@@ -99,18 +96,16 @@ function resolve(expr, scope, rootScope, isKey) {
             return true;
           }
         });
+        
+        // If result is an object, make a copy to preserve source scope data
+        if (Array.isArray(result)) {
+          result = result.slice();
+        } else if (typeof result === 'object') {
+          result = JSON.parse(JSON.stringify(result));
+        }
       break;
       case 'filter':
         result = filter(token.val, token.opts, scope, rootScope);
-      break;
-      case 'query':
-        result = ( jpath.eval(scope, token.val) || [] );
-        
-        /** Fix for JSONPath array-wrapping behaviour. */     
-        if (result.length === 1 && Array.isArray(result) 
-          && Array.isArray(result[0])) {
-            result = result[0];
-        }
       break;
       case 'static':
         result = token.val;
@@ -121,7 +116,7 @@ function resolve(expr, scope, rootScope, isKey) {
     token.filters.forEach(function(tokenFilter) {
       var val  = tokenFilter.val,
           opts = tokenFilter.opts;
-            
+          
       result = filter(val, opts, scope, rootScope, result);
     });
     
@@ -143,14 +138,15 @@ function filter(type, params, scope, rootScope, result) {
 
   switch (type) {
     case 'add':
+      result = result ? +result : 0;
       params.forEach(function(param) {
-        result = (result || 0) + param; 
+        result += +param; 
       });
     break;
     case 'and':
-      result = result || params[0];
+      result = result ? isTruthy(result) : isTruthy(params[0]);
       params.forEach(function(param) {
-        result = result && param;
+        result = result && isTruthy(param);
       });
     break;
     case 'array':
@@ -160,29 +156,49 @@ function filter(type, params, scope, rootScope, result) {
       });
     break;
     case 'bool':
-      if (result && result.toString().search(/^true|t|yes|y|[1-9]+$/i) >= 0) {
-        result = true;
-      } else {
-        result = false;
-      }
+      result = isTruthy(result);
     break;
     case 'concat':
-      result = params.join(' ');
+      if (result) params.unshift(result);
+      result = params.join('');
     break;
     case 'count':
-      if (Array.isArray(params[0]) || typeof params[0] === 'string') {
-        result = params[0].length;
-      } else if (typeof params[0] === 'object') {
-        result = Object.keys(params[0]);
+      if (Array.isArray(result) || typeof result === 'string') {
+        result = result.length;
+      } else if (typeof result === 'object') {
+        result = Object.keys(result);
       } else {
-        result = params[0] ? 1 : 0;
+        result = result ? 1 : 0;
+      }
+    break;
+    case 'date':
+      switch (( params[0] || 'json').toLowerCase()) {
+        case 'unix':
+          result = new Date(result).getSeconds();
+        break;
+        case 'javascript':
+          result = new Date(result).getMilliseconds();
+        break;
+        case 'json':
+        default:
+          result = new Date(result).toJSON();
+        break;
       }
     break;
     case 'decrement':
+      result = +result;
       --result;
     break;
     case 'default':
-      result = result || params[0];
+      result = isTruthy(result) ? result : params[0];
+    break;
+    case 'divide':
+      params.forEach(function(param) {
+        result = result / param;
+      });
+    break;
+    case 'eq':
+      result = result == params[0] ? true : false;
     break;
     case 'filter':
       var filtered = [];
@@ -190,27 +206,27 @@ function filter(type, params, scope, rootScope, result) {
       ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
         if (!item || !(params[0] in item)) return;
         
-        switch (params[2]) {
-          case 'eq':
-            if (item[params[0]] == params[1]) filtered.push(item);
+        switch (params[1]) {
+          case '=':
+            if (item[params[0]] == params[2]) filtered.push(item);
           break;
-          case 'neq':
-            if (item[params[0]] != params[1]) filtered.push(item);
+          case '!=':
+            if (item[params[0]] != params[2]) filtered.push(item);
           break;
-          case 'gt':
-            if (item[params[0]] > params[1]) filtered.push(item);
+          case '>':
+            if (item[params[0]] > params[2]) filtered.push(item);
           break;
-          case 'gte':
-            if (item[params[0]] >= params[1]) filtered.push(item);
+          case '>=':
+            if (item[params[0]] >= params[2]) filtered.push(item);
           break;
-          case 'lt':
-            if (item[params[0]] < params[1]) filtered.push(item);
+          case '<':
+            if (item[params[0]] < params[2]) filtered.push(item);
           break;
-          case 'lte':
-            if (item[params[0]] <= params[1]) filtered.push(item);
+          case '<=':
+            if (item[params[0]] <= params[2]) filtered.push(item);
           break;
           default:
-            if (item[params[0]] == params[1]) filtered.push(item);
+            if (item[params[0]] == params[2]) filtered.push(item);
           break;
         }
       });
@@ -219,15 +235,16 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'float':
       result = parseFloat(result);      
-      if (params[0]) result = parseFloat(result.toFixed(params[0]));
+      result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
     case 'gt':
       result = result > params[0];
     break;
     case 'if':
-      result = params[0] ? params[1] : params[2];
+      result = isTruthy(result) ? params[0] : params[1];
     break;
     case 'increment':
+      result = +result;
       ++result;
     break;
     case 'int':
@@ -236,29 +253,20 @@ function filter(type, params, scope, rootScope, result) {
     case 'join':
       result = (result || '').join(params[0] || ',');
     break;
-    case 'least':
-      var least;
-      
-      ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
-        if (!least || params[0] in item && item[params[0]] < least[params[0]]) {
-          least = item;
-        }
-      });
-      
-      result = least;
-    break;
-    case 'longest':
-      result = params[0][0];    
-      params[0].forEach(function(param) {
-        if (param.length && param.length > result.length) result = param;
-      });
-    break;
     case 'lt':
       return result < params[0];
     break;
     case 'lowercase':
       result = result.toLowerCase();
     break;
+    case 'multiply':
+      params.forEach(function(param) {
+        result = result * param;
+      });
+    break;
+    case 'not':
+      result = !isTruthy(params[0]);
+    break;    
     case 'or':
       params.forEach(function(param) {
         result = result || param;
@@ -273,6 +281,49 @@ function filter(type, params, scope, rootScope, result) {
       
       result = plucked;
     break;
+    case 'pop':
+      result = ( Array.isArray(result) ? result : [ result ] ).pop();
+    break;
+    case 'push':
+      result = Array.isArray(result) ? result : [ result ];
+      
+      params.forEach(function(param) {
+        result.push(param);
+      });            
+    break;
+    case 'reduce':
+      var val;
+    
+      ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
+        if (!val) {
+          val = item;
+        } else if (!params[1] || params[0] in item) {
+          var itemKeyVal = params[1] ? item[params[0]] : item,
+              valKeyVal = params[1] ? val[params[0]] : val;
+        
+          switch (( params[1] || params[0] ).toLowerCase()) {
+            case 'largest':
+              if (itemKeyVal > valKeyVal) val = item;
+            break;
+            case 'longest':
+              if (((typeof itemKeyVal === 'string' && typeof valKeyVal === 'string') 
+                || ('length' in itemKeyVal && 'length' in valKeyVal))
+                && itemKeyVal.length > valKeyVal.length) val = item;
+            break;
+            case 'shortest':
+              if (((typeof itemKeyVal === 'string' && typeof valKeyVal === 'string') 
+                || ('length' in itemKeyVal && 'length' in valKeyVal))
+                && itemKeyVal.length < valKeyVal.length) val = item;
+            break;
+            case 'smallest':
+              if (itemKeyVal < valKeyVal) val = item;
+            break;
+          }
+        }
+      });
+      
+      result = val;
+    break;
     case 'replace':    
       var expr = new RegExp(params[0]);
           
@@ -282,46 +333,74 @@ function filter(type, params, scope, rootScope, result) {
         result = params[2];
       }
     break;
-    case 'shift':
-      result = Array.isArray(result) ? result[0] : [ result ][0];
-    break;
-    case 'shortest':
-      var shortest;    
-      
-      result.forEach(function(item) {
-        if (!item) return;
-      
-        if (!shortest || (item.length && item.length < shortest.length)) {
-          shortest = item;
-        }
+    case 'subtract':
+      result = result ? +result : 0;
+      params.forEach(function(param) {
+        result -= +param; 
       });
-      
-      result = shortest;
-    break;
-    case 'date':
-      switch (params[0]) {
-        case 's':
-          result = moment(result).unix();
-        break;
-        case 'ms':
-          result = moment(result).valueOf();
-        break;
-        case 'json':
-        default:
-          result = moment(result).toJSON();
-        break;
-      }
     break;
     case 'uppercase':
       result = result.toUpperCase();
+    break;
+    case 'values':
+      var values = [];
+      
+      if (result) {
+        if (typeof result === 'object') {
+          Object.keys(result).forEach(function(key) {
+            values.push(result[key]);
+          });
+        } else if (Array.isArray(result)) {
+          values = result;
+        } else {
+          values.push(result);
+        }
+      }
+      
+      result = values;
     break;
   }
       
   return result;
 }
 
+function isTruthy(val) {
+  var truthy = false;
+  
+  switch (typeof val) {
+    case 'string':
+      if (val.search(/^true|yes|t|y$/i) >= 0) {
+        truthy = true;
+      } else if (+val > 0 || +val < 0) {
+        truthy = true;
+      }
+    break;
+    case 'number':
+      if (val > 0 || val < 0) {
+        truthy = true;
+      }
+    break;
+    case 'object':
+      if (Array.isArray(val)) {
+        if (val.length > 0) {
+          truthy = true;
+        }
+      } else {
+        if (Object.keys(val).length > 0) {
+          truthy = true;
+        }
+      }
+    break;
+    case 'boolean':
+      truthy = val;
+    break;
+  }
+
+  return truthy;  
+}
+
 function parse(expr) {
-  var filter    = { val: '', opts: [ '' ], type: 'filter' },
+  var filter    = { val: '', opts: [], type: 'filter' },
       tokens    = [],
       level     = [],
       addOpts   = false,
@@ -349,21 +428,20 @@ function parse(expr) {
     switch (expr[i]) {
       case '\'':      
         /** A single quote at root level is a static value delimeter */
-        if (level[level.length - 1] === expr[i]) {
+        if (level[level.length - 1] === '\'') {
           level.pop();
-          token.type = 'static';
-          ++i; continue;
-        } else if (!level.length) {
-          level.push(expr[i]);
-          ++i; continue;
+
+          if (!level.length) {
+            token.type = 'static';
+            ++i; continue;
+          }          
+        } else {
+          level.push('\'');
+
+          if (level.length === 1) {
+            ++i; continue;
+          }
         }        
-      break;
-      /** Deprecated - We can probably get rid of JSON Query now */
-      case '$':
-        /** A dollar sign at the start of a new token is a query */
-        if (token.val === '' && level[level.length - 1] !== '\'') {
-          token.type = 'query';
-        }
       break;
       case '^':
         /** A carrot at the start of a new token is a root lookup */
@@ -385,7 +463,7 @@ function parse(expr) {
       break;
       case '[':
         level.push(']');
-        if (level.length === 1 && token.val !== '' && token.type !== 'query') {
+        if (level.length === 1 && token.val !== '') {
           token.type = 'array';
           addOpts = true;
           ++i; continue;
@@ -435,7 +513,7 @@ function parse(expr) {
         }
       case ')':
       case ']':
-        if (level[level.length -1] === expr[i]) {
+        if (level[level.length - 1] === expr[i]) {
           level.pop();
         }
         
@@ -460,7 +538,7 @@ function parse(expr) {
               token = getNewToken();
               
               /** Exit filter state and initialize new filter */
-              filter = { val: '', opts: [ '' ], type: 'filter' },
+              filter = { val: '', opts: [], type: 'filter' },
               addFilter = false;
               
               ++i; continue;
@@ -516,6 +594,7 @@ function parse(expr) {
     
     if (addOpts) {
       if (addFilter) {
+        if (!filter.opts.length) filter.opts.push('');
         filter.opts[filter.opts.length - 1] += expr[i];
       } else {
         token.opts[token.opts.length - 1] += expr[i];

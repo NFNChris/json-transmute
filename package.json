@@ -4,7 +4,7 @@
   "description": "Transmute javscript object data into common denominator formats defined via JSON",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/NFNChris/json-transmute#readme",
   "dependencies": {
-    "JSONPath": "^0.11.2",
-    "moment": "^2.18.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
   }
 }

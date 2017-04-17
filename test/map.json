@@ -1,0 +1,10 @@
+{
+  "operators": {
+    "productArr[Product.variants]": {
+      "title": "^Product.title",
+      "price": "^Product.price",
+      "'color'": "color",
+      "inStock": "stock | bool"
+    }
+  }
+}
