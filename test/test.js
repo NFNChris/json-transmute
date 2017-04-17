@@ -381,7 +381,6 @@ describe('Filters', function() {
     });
 
     it('should reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", "smallest" (specified by x2) value.  Elements must have a `.length` property for "longest" and "shortest" x2 values.  Omit parameter x1 for non-object array elements (e.g. strings)', function() {
-      console.log(JSON.stringify(result, null, 2));
       expect(result.filter1).to.eql({ color: 'red', stock: '5' });
       expect(result.filter2).to.equal('green');
       expect(result.filter3).to.equal('red');

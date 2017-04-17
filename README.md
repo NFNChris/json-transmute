@@ -2,14 +2,13 @@
 
 Simplify your code (and your data) by defining JSON data maps that return only the data you need in common denominator formats.
 
-[![npm package](https://nodei.co/npm/request.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/request/)
+[![npm package](https://nodei.co/npm/json-transmute.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/request/)
 
-[![Build status](https://img.shields.io/travis/request/request/master.svg?style=flat-square)](https://travis-ci.org/request/request)
-[![Coverage](https://img.shields.io/codecov/c/github/request/request.svg?style=flat-square)](https://codecov.io/github/request/request?branch=master)
-[![Coverage](https://img.shields.io/coveralls/request/request.svg?style=flat-square)](https://coveralls.io/r/request/request)
-[![Dependency Status](https://img.shields.io/david/request/request.svg?style=flat-square)](https://david-dm.org/request/request)
-[![Known Vulnerabilities](https://snyk.io/test/npm/request/badge.svg?style=flat-square)](https://snyk.io/test/npm/request)
-[![Gitter](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat-square)](https://gitter.im/request/request?utm_source=badge)
+[![Build status](https://img.shields.io/travis/json-transmute/json-transmute/master.svg?style=flat-square)](https://travis-ci.org/request/request)
+[![Coverage](https://img.shields.io/codecov/c/github/json-transmute/json-transmute.svg?style=flat-square)](https://codecov.io/github/request/request?branch=master)
+[![Coverage](https://img.shields.io/coveralls/json-transmute/json-transmute.svg?style=flat-square)](https://coveralls.io/r/request/request)
+[![Dependency Status](https://img.shields.io/david/json-transmute/json-transmute.svg?style=flat-square)](https://david-dm.org/request/request)
+[![Known Vulnerabilities](https://snyk.io/test/npm/json-transmute/badge.svg?style=flat-square)](https://snyk.io/test/npm/request)
 
 ## Install
 
