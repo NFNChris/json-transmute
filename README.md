@@ -2,7 +2,21 @@
 
 Simplify your code (and your data) by defining JSON data maps that return only the data you need in common denominator formats.
 
+[![npm package](https://nodei.co/npm/request.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/request/)
+
+[![Build status](https://img.shields.io/travis/request/request/master.svg?style=flat-square)](https://travis-ci.org/request/request)
+[![Coverage](https://img.shields.io/codecov/c/github/request/request.svg?style=flat-square)](https://codecov.io/github/request/request?branch=master)
+[![Coverage](https://img.shields.io/coveralls/request/request.svg?style=flat-square)](https://coveralls.io/r/request/request)
+[![Dependency Status](https://img.shields.io/david/request/request.svg?style=flat-square)](https://david-dm.org/request/request)
+[![Known Vulnerabilities](https://snyk.io/test/npm/request/badge.svg?style=flat-square)](https://snyk.io/test/npm/request)
+[![Gitter](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat-square)](https://gitter.im/request/request?utm_source=badge)
+
 ## Install
+
+Install from npm:
+```bash
+$ npm install json-transmute
+```
 
 ## Example
 
@@ -114,7 +128,6 @@ pluck(x1) | Returns an array of key values from a piped array of objects having 
 pop | Returns the last element in an array
 push(x1, x2, ..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
 reduce(x1, x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` subtract(x1, x2, ..xn) | Subtract one or more values from a piped value
-property for "longest" and "shortest" x2 values.  Omit parameter x1 for non-object array elements (e.g. strings)
 replace(x1, x2) | Returns `.replace(x1, x2)` of the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
 values | Formats piped value as an array. Objects are converted to an array of key values
@@ -185,4 +198,7 @@ map = {
 // }
 ```
 
+## License
+
+[MIT](LICENSE)
 
