@@ -107,34 +107,34 @@ var map = {
 
 Function                        | Description
 --------------------------------|------------
-add(x1, x2, ..xn) | Add one or more values to a piped value
-and(x1, x2, ..xn) | Boolean AND result of a piped value and one or more additional parameter values
-array(x1, x2, ..xn) | Return an array containing the piped value and one or more additional parameter values
+add(x1,x2,..xn) | Add one or more values to a piped value
+and(x1,x2,..xn) | Boolean AND result of a piped value and one or more additional parameter values
+array(x1,x2,..xn) | Return an array containing the piped value and one or more additional parameter values
 bool | Boolean format a piped value
-concat(x1, x2, ..xn) | Return a string catenation of a piped value combined with one or more additional parameter values
+concat(x1,x2,..xn) | Return a string catenation of a piped value combined with one or more additional parameter values
 count | Count the number of keys, values, or characters in a piped object, array, or string
 date(x1) | Date format a piped value where x1 is one of: 'unix', 'javascript', 'json' (default)
 decrement | Reduces piped value by 1
 default(x1) | Returns x1 if the piped value is falsey
-divide(x1, x2, ..xn) | Divide one or more values from a piped value
+divide(x1,x2,..xn) | Divide one or more values from a piped value
 eq(x1) | Returns true if piped value == x1
-filter(x1, x2, x3) | Filter a piped array of objects to include only those elements having a key x1 value that tests x2: ">", ">=", "=", "<=", or "!=" relative to x3
+filter(x1,x2,x3) | Filter a piped array of objects to include only those elements having a key x1 value that tests x2: ">", ">=", "=", "<=", or "!=" relative to x3
 float(x1) | Float format a piped value with precision x1 (or 2 if x1 is not specified)
 gt(x1) | Returns true if piped value is greater than value x1
-if(x1, x2) | Returns x1 if piped value is true, otherwise returns x2
+if(x1,x2) | Returns x1 if piped value is true, otherwise returns x2
 increment | Increases piped value by 1
 int | Integer format a piped value
 join(x1) | Joins array elements from a piped value together into a string delimited by x1 (or `,` if x1 is not specified)
 lt(x1) | Returns true if piped value is less than value x1
 lowercase | Returns `.toLowerCase()` of the piped string
-multiply(x1, x2, ..xn) | Multiply one or more values with a piped value
+multiply(x1,x2,..xn) | Multiply one or more values with a piped value
 not(x1) | Returns the boolean opposite of x1
-or(x1, x2, ..xn) | Boolean OR result of a piped value and one or more additional parameter values
+or(x1,x2,..xn) | Boolean OR result of a piped value and one or more additional parameter values
 pluck(x1) | Returns an array of key values from a piped array of objects having x1 as a key
 pop | Returns the last element in an array
-push(x1, x2, ..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
-reduce(x1, x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` subtract(x1, x2, ..xn) | Subtract one or more values from a piped value
-replace(x1, x2) | Returns `.replace(x1, x2)` of the piped string
+push(x1,x2,..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
+reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` subtract(x1,x2,..xn) | Subtract one or more values from a piped value
+replace(x1,x2) | Returns `.replace(x1, x2)` of the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
 values | Formats piped value as an array. Objects are converted to an array of key values
 
