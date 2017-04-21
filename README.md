@@ -99,7 +99,7 @@ Filter function static parameters (even numerics) must be enclosed in single quo
 
 ```javascript
 var map = {
-  "stockout": "Product.variants | filter('stock', '=', '0')
+  "stockout": "Product.variants | filter('stock', '=', '0')"
 };
 
 // { "color": "green", "stock": "0" }
