@@ -97,6 +97,14 @@ __space__ | expr1 expr2 | Expression delimieter
 
 Filter function static parameters (even numerics) must be enclosed in single quotes `'` to avoid the parser attempting to resolve them as key values and ultimately returning `undefined`.
 
+```javascript
+var map = {
+  "stockout": "Product.variants | filter('stock', '=', '0')
+};
+
+// { "color": "green", "stock": "0" }
+```
+
 Function                        | Description
 --------------------------------|------------
 add(x1, x2, ..xn) | Add one or more values to a piped value
@@ -184,7 +192,7 @@ map = {
 
 ```javascript
 map = { 
-  "variantColor[Product.variants]": {
+  "variantColor{Product.variants}": {
     "'color'": "color"
   }
 };
