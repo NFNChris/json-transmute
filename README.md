@@ -133,7 +133,8 @@ or(x1,x2,..xn) | Boolean OR result of a piped value and one or more additional p
 pluck(x1) | Returns an array of key values from a piped array of objects having x1 as a key
 pop | Returns the last element in an array
 push(x1,x2,..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
-reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` subtract(x1,x2,..xn) | Subtract one or more values from a piped value
+reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` attribute
+subtract(x1,x2,..xn) | Subtract one or more values from a piped value
 replace(x1,x2) | Returns `.replace(x1, x2)` of the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
 values | Formats piped value as an array. Objects are converted to an array of key values
