@@ -1,6 +1,6 @@
 {
   "name": "json-transmute",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Transmute javscript object data into common denominator formats defined via JSON",
   "main": "index.js",
   "scripts": {
