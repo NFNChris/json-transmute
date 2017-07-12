@@ -431,6 +431,18 @@ describe('References', function() {
     it('should ensure objects are passed by value, not by reference', function() {
       result.filter1.options = 'No Options Available';
       expect(result.filter1).to.not.eql(result.filter2);
+    });    
+  });
+  
+  describe('#Undefined', function() {
+    before(function() {
+      map = {
+        "filter": "does.not.exist | default('1') | int | add(also.does.not.exist | default('2') | int | divide(definitely.not.defined | default('2') | int))"
+      };
+    });
+
+    it('should handle undefined references gracefully', function() {
+      expect(result.filter).to.equal(2);
     });
   });
 });

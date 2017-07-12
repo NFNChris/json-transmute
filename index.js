@@ -274,7 +274,6 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'pluck':
       var plucked = [];
-    
       ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
         if (item && params[0] in item) plucked.push(item[params[0]]);
       });
@@ -359,6 +358,9 @@ function filter(type, params, scope, rootScope, result) {
       
       result = values;
     break;
+    default:
+      throw new Error('Unknown filter type: ' + type);
+    break;
   }
       
   return result;
@@ -400,12 +402,12 @@ function isTruthy(val) {
 }
 
 function parse(expr) {
-  var filter    = { val: '', opts: [], type: 'filter' },
-      tokens    = [],
+  var tokens    = [],
       level     = [],
       addOpts   = false,
       addFilter = false,
-      i         = 0;
+      i         = 0,
+      filter;
       
   /** Token factory */    
   var getNewToken = function() {
@@ -417,6 +419,18 @@ function parse(expr) {
       type: 'lookup',
       root: false
     }
+  }
+  
+  /** Filter factory */
+  var addNewFilter = function(token) {
+    var filter = {
+      val: '', 
+      opts: [], 
+      type: 'filter'
+    }
+    
+    token.filters.push(filter);
+    return filter;
   }
   
   /** Initialize token */
@@ -533,14 +547,11 @@ function parse(expr) {
             if (filter.val !== '') {
             
               /** Add filter to token and intialize new token*/
-              token.filters.push(filter);
               tokens.push(token);
               token = getNewToken();
               
-              /** Exit filter state and initialize new filter */
-              filter = { val: '', opts: [], type: 'filter' },
-              addFilter = false;
-              
+              /** Exit filter state */
+              addFilter = false;              
               ++i; continue;
 
             /** If filter value is empty, ignore white space */
@@ -575,6 +586,8 @@ function parse(expr) {
             token.pattern += '|';
           }
           
+          /** Initialize new filter */
+          filter = addNewFilter(token);          
           addFilter = true;
           ++i; continue;
         }
@@ -611,7 +624,6 @@ function parse(expr) {
   }
   
   if (token.val  !== '') tokens.push(token);
-  if (filter.val !== '') tokens[tokens.length - 1].filters.push(filter);  
   
   tokens.forEach(function(token) {
     token.pattern = token.pattern.trim();
