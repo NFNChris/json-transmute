@@ -1,3 +1,5 @@
+var crypto = require('crypto');
+
 module.exports = function(scope, map) {
   return transmute(scope, map);
 }
@@ -240,6 +242,10 @@ function filter(type, params, scope, rootScope, result) {
     case 'gt':
       result = result > params[0];
     break;
+    case 'hash':
+      var hashStr = JSON.stringify(result);
+      result = crypto.createHash('md5').update(hashStr).digest('hex');
+    break;
     case 'if':
       result = isTruthy(result) ? params[0] : params[1];
     break;
@@ -282,6 +288,11 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'pop':
       result = ( Array.isArray(result) ? result : [ result ] ).pop();
+    break;
+    case 'prune':
+      Object.keys(result).forEach(function(key) {
+        if (params.indexOf(key) < 0) delete result[key];
+      });      
     break;
     case 'push':
       result = Array.isArray(result) ? result : [ result ];

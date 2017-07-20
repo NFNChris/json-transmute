@@ -239,6 +239,19 @@ describe('Filters', function() {
     });
   });
 
+  describe('#hash()', function() {
+    before(function() { 
+      map = { 
+        "filter1": "Product.shipping.options | hash",
+        "filter2": "Product.shipping.options | hash" 
+      }; 
+    });
+
+    it('should return an consistent md5 hash string', function() {
+      expect(result.filter1).to.equal(result.filter2);
+    });
+  });
+
   describe('#if()', function() {
     before(function() { 
       map = { "filter": "'yes' | if('win', 'lose')" }; 
@@ -346,6 +359,16 @@ describe('Filters', function() {
 
     it('should return the last element of an array', function() {
       expect(result.filter).to.eql({ "color": "green", "stock": "0" });
+    });
+  });
+
+  describe('#prune()', function() {
+    before(function() { 
+      map = { "filter": "Product.shipping.options | prune('nextDay', 'secondDay')" }; 
+    });
+
+    it('should include only those key / value pairs specified as parameters', function() {
+      expect(result.filter).to.not.have.any.keys('economy');
     });
   });
 
