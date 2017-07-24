@@ -233,6 +233,13 @@ function filter(type, params, scope, rootScope, result) {
       result = parseFloat(result);      
       result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
+    case 'get':
+      if (Array.isArray(result) || typeof result === 'string') {
+        result = result[parseInt(params[0] || 0)];
+      } else if (typeof result === 'object') {
+        result = result[params[0]];
+      }
+    break;
     case 'gt':
       result = result > params[0];
     break;
@@ -330,6 +337,18 @@ function filter(type, params, scope, rootScope, result) {
         result = result.replace(expr, params[1]);
       } else {
         result = params[2];
+      }
+    break;
+    case 'set':
+      var idx = parseInt(params[0] || 0),
+          val = params[1] || '';
+    
+      if (Array.isArray(result)) {
+        result[idx] = val;
+      } else if (typeof result === 'string') {
+        result = result.substr(0, idx) + val + result.substr(idx + val.length);
+      } else if (typeof result === 'object') {
+        result[params[0]] = val;
       }
     break;
     case 'slice':

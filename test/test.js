@@ -219,6 +219,22 @@ describe('Filters', function() {
     });
   });
 
+  describe('#get()', function() {
+    before(function() { 
+      map = { 
+        "filter1": "Product.variants | get('2')",
+        "filter2": "Product.title | get('2')",
+        "filter3": "Product | get('tags')"
+      }; 
+    });
+
+    it('should return element x1 from a piped array, object, or string', function() {
+      expect(result.filter1).to.deep.equal({ "color": "green", "stock": "0" });
+      expect(result.filter2).to.equal("M");
+      expect(result.filter3).to.equal("Mens,Shirt,Casual");
+    });
+  });
+
   describe('#gt()', function() {
     before(function() { 
       map = { "filter": "'1' | gt('0')" }; 
@@ -398,6 +414,22 @@ describe('Filters', function() {
       expect(result.filter2).to.equal('green'); // deprecated
       expect(result.filter3).to.equal('red');   // deprecated
       expect(result.filter4).to.eql({ color: 'green', stock: '0' });
+    });
+  });
+
+  describe('#set()', function() {
+    before(function() { 
+      map = { 
+        "filter1": "Product.variants | set('2', '2') | get('2')",
+        "filter2": "Product.title | set('2', '2') | get('2')",
+        "filter3": "Product | set('tags', '2') | get('tags')"
+      }; 
+    });
+
+    it('should return element x1 from a piped array, object, or string', function() {
+      expect(result.filter1).to.equal('2');
+      expect(result.filter2).to.equal('2');
+      expect(result.filter3).to.equal('2');
     });
   });
 
