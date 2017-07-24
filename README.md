@@ -137,7 +137,7 @@ push(x1,x2,..xn) | Add one or more additional elements to a piped array.  Ensure
 slice(x1,x2) | Returns `.slice(x1, x2)` of the piped array or string
 split(x1) | Returns `.split(x1)` of the piped string.  Default split character is `,`
 subtract(x1,x2,..xn) | Subtract one or more values from a piped value
-reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", or "smallest" (specified by x2) value.  Elements must have a `.length` attribute.
+reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", or "smallest" (specified by x2) value.  In the absence of key x1, element values will be compared directly.
 replace(x1,x2) | Returns `.replace(x1, x2)` of the piped string
 trim | Removes leading and trailing whitespace from the piped string
 uppercase | Returns `.toUpperCase()` of the piped string

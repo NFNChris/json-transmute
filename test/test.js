@@ -387,16 +387,16 @@ describe('Filters', function() {
       map = { 
         "filter0": "Product.variants", 
         "filter1": "Product.variants | reduce('stock', 'largest')", 
-        "filter2": "Product.variants | pluck('color') | reduce('longest')",
-        "filter3": "Product.variants | pluck('color') | reduce('shortest')", 
+        "filter2": "Product.variants | pluck('color') | reduce('longest')",  // deprecated
+        "filter3": "Product.variants | pluck('color') | reduce('shortest')", // deprecated
         "filter4": "Product.variants | reduce('stock', 'smallest')" 
       }; 
     });
 
     it('should reduce array of piped values to a single element where element key x1 has the "largest", "longest", "shortest", "smallest" (specified by x2) value.  Elements must have a `.length` property for "longest" and "shortest" x2 values.  Omit parameter x1 for non-object array elements (e.g. strings)', function() {
       expect(result.filter1).to.eql({ color: 'red', stock: '5' });
-      expect(result.filter2).to.equal('green');
-      expect(result.filter3).to.equal('red');
+      expect(result.filter2).to.equal('green'); // deprecated
+      expect(result.filter3).to.equal('red');   // deprecated
       expect(result.filter4).to.eql({ color: 'green', stock: '0' });
     });
   });

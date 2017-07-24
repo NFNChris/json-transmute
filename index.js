@@ -297,29 +297,23 @@ function filter(type, params, scope, rootScope, result) {
       });            
     break;
     case 'reduce':
-      var val;
-    
-      ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
+      var key = params[1] ? params[0] : 'length',
+          type = params[1] ? params[1] : params[0],
+          val;
+      
+      ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {      
         if (!val) {
           val = item;
-        } else if (!params[1] || params[0] in item) {
-          var itemKeyVal = params[1] ? item[params[0]] : item,
-              valKeyVal = params[1] ? val[params[0]] : val;
+        } else {
+          var itemKeyVal = item[key] || item,
+              valKeyVal = val[key] || val;
         
-          switch (( params[1] || params[0] ).toLowerCase()) {
+          switch (type.toLowerCase()) {
+            case 'longest': // deprecated
             case 'largest':
               if (itemKeyVal > valKeyVal) val = item;
             break;
-            case 'longest':
-              if (((typeof itemKeyVal === 'string' && typeof valKeyVal === 'string') 
-                || ('length' in itemKeyVal && 'length' in valKeyVal))
-                && itemKeyVal.length > valKeyVal.length) val = item;
-            break;
-            case 'shortest':
-              if (((typeof itemKeyVal === 'string' && typeof valKeyVal === 'string') 
-                || ('length' in itemKeyVal && 'length' in valKeyVal))
-                && itemKeyVal.length < valKeyVal.length) val = item;
-            break;
+            case 'shortest': // deprecated
             case 'smallest':
               if (itemKeyVal < valKeyVal) val = item;
             break;
@@ -340,7 +334,11 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'slice':
       if (Array.isArray(result) || typeof result === 'string') {
-        result = result.slice(parseInt(params[0] || 0), parseInt(params[1] || 0));
+        if (params[1]) {
+          result = result.slice(parseInt(params[0] || 0), parseInt(params[1] || 0));
+        } else {
+          result = result.slice(parseInt(params[0] || 0));
+        }
       }
     break;
     case 'split':
