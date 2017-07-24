@@ -13,7 +13,8 @@
         "secondDay": { "name": "Second Day Air", "cost": "30.00" },
         "economy": { "name": "Free Economy Shipping", "cost": "0.00" }
       }
-    }
+    },
+    "tags": "Mens,Shirt,Casual"
   }
 }  
   

@@ -343,11 +343,22 @@ function filter(type, params, scope, rootScope, result) {
         result = params[2];
       }
     break;
+    case 'slice':
+      if (Array.isArray(result) || typeof result === 'string') {
+        result = result.slice(parseInt(params[0] || 0), parseInt(params[1] || 0));
+      }
+    break;
+    case 'split':
+      if (typeof result === 'string') result = result.split(params[0] || ',');
+    break;
     case 'subtract':
       result = result ? +result : 0;
       params.forEach(function(param) {
         result -= +param; 
       });
+    break;
+    case 'trim':
+      if (typeof result === 'string') result = result.trim();
     break;
     case 'uppercase':
       result = result.toUpperCase();

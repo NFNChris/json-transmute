@@ -411,6 +411,30 @@ describe('Filters', function() {
     });
   });
 
+  describe('#slice()', function() {
+    before(function() { 
+      map = { 
+        "filter1": "Product.variants | slice('2', '3')",
+        "filter2": "Product.tags | slice('0', '4')"
+      }; 
+    });
+  
+    it('should return `.slice()` of the pipped array or string', function() {
+      expect(result.filter1).to.deep.equal([ { "color": "green", "stock": "0" } ]);
+      expect(result.filter2).to.equal("Mens");
+    });
+  });
+
+  describe('#split()', function() {
+    before(function() { 
+      map = { "filter": "Product.tags | split" }; 
+    });
+  
+    it('should return `.split()` of the pipped string', function() {
+      expect(result.filter).to.deep.equal([ 'Mens', 'Shirt', 'Casual' ]);
+    });
+  });
+
   describe('#subtract()', function() {
     before(function() { 
       map = { "filter": "'25' | subtract('1')" }; 
@@ -418,6 +442,16 @@ describe('Filters', function() {
   
     it('should subtract one or more values from a piped value', function() {
       expect(result.filter).to.equal(24);
+    });
+  });
+
+  describe('#trim()', function() {
+    before(function() { 
+      map = { "filter": "' hello ' | trim" }; 
+    });
+  
+    it('should return `.trim()` of the piped string', function() {
+      expect(result.filter).to.equal("hello");
     });
   });
 
