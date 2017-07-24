@@ -109,7 +109,6 @@ Function                        | Description
 --------------------------------|------------
 add(x1,x2,..xn) | Add one or more values to a piped value
 and(x1,x2,..xn) | Boolean AND result of a piped value and one or more additional parameter values
-array(x1,x2,..xn) | Return an array containing the piped value and one or more additional parameter values
 bool | Boolean format a piped value
 concat(x1,x2,..xn) | Return a string catenation of a piped value combined with one or more additional parameter values
 count | Count the number of keys, values, or characters in a piped object, array, or string

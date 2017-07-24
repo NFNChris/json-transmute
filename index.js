@@ -151,12 +151,6 @@ function filter(type, params, scope, rootScope, result) {
         result = result && isTruthy(param);
       });
     break;
-    case 'array':
-      result = result ? [ result ] : [];        
-      params.forEach(function(param) {
-        result.push(param);
-      });
-    break;
     case 'bool':
       result = isTruthy(result);
     break;
@@ -294,6 +288,7 @@ function filter(type, params, scope, rootScope, result) {
         if (params.indexOf(key) < 0) delete result[key];
       });      
     break;
+    case 'array': // deprecated
     case 'push':
       result = Array.isArray(result) ? result : [ result ];
       

@@ -109,16 +109,6 @@ describe('Filters', function() {
     });
   });
 
-  describe('#array()', function() {
-    before(function() { 
-      map = { "filter": "'45.00' | array('30.00')" }; 
-    });
-  
-    it('should return an array containing the piped value and one or more additional parameter values', function() {
-      expect(result.filter).to.eql([ '45.00', '30.00' ]);
-    });
-  });
-
   describe('#bool()', function() {
     before(function() { 
       map = { "filter": "'true' | bool" }; 
