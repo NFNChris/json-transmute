@@ -17,7 +17,11 @@ function transmute(scope, map, target, rootScope) {
   }
 
   if ('@path' in map) {
-    scope = resolve(map['@path'], scope, rootScope).val;
+    if (map['@path'] === '@root') {
+      scope = rootScope;
+    } else {
+      scope = resolve(map['@path'], scope, rootScope).val;
+    }
   }
   
   /** Ensure array format for scope */

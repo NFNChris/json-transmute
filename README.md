@@ -164,7 +164,7 @@ var map = {
 
 ### @root
 
-A `@root` key expression modifies the default Root Scope for all siblings and child elements.  Subsequent (sibling and child element) use of the `^` operator will resolve expressions against the new root scope.  To set the Root Scope equal to the current / local scope, assign the `@path` value to the `@root` key.
+A `@root` key expression modifies the default Root Scope for all siblings and child elements.  Subsequent (sibling and child element) use of the `^` operator will resolve expressions against the new root scope.  To set the Root Scope equal to the Local Scope, assign the `@path` value to the `@root` key.  Conversely, to set the Local Scope equal to the Root Scope, assign the `@root` value to the `@path` key.
 
 ```javascript
 var map = {
