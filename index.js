@@ -436,11 +436,12 @@ function isTruthy(val) {
 }
 
 function parse(expr) {
-  var tokens    = [],
-      level     = [],
-      addOpts   = false,
-      addFilter = false,
-      i         = 0,
+  var tokens      = [],
+      level       = [],
+      addOpts     = false,
+      addFilter   = false,
+      levelOffset = 0,
+      i           = 0,
       filter;
       
   /** Token factory */    
@@ -479,14 +480,14 @@ function parse(expr) {
         if (level[level.length - 1] === '\'') {
           level.pop();
 
-          if (!level.length) {
+          if (level.length - levelOffset === 0) {
             token.type = 'static';
             ++i; continue;
           }          
         } else {
           level.push('\'');
 
-          if (level.length === 1) {
+          if (level.length - levelOffset === 1) {
             ++i; continue;
           }
         }        
@@ -521,7 +522,8 @@ function parse(expr) {
         level.push('}');
 
         /** Check for handlebar opening token notation */
-        if (level.length === 1 && expr[i + 1] === '{') {
+        if (level.length - levelOffset === 1 && expr[i + 1] === '{') {
+          ++levelOffset; ++levelOffset;
 
           /** Remove opening bracket from replacement pattern string */
           if (token.val !== '') {
@@ -531,7 +533,7 @@ function parse(expr) {
                     
           /** Initialize a new token */
           token = getNewToken();
-          token.pattern = "{{";
+          token.pattern += "{{";
 
           /** Advance expr pointer past handlebar opening notation */
           level.push('}');
@@ -539,7 +541,7 @@ function parse(expr) {
         }
 
         /** Check for object notation */
-        if (level.length === 1 && token.val !== '') {
+        if (level.length === 1 && (token.val !== '' || tokens.length)) {
           token.type = 'object';
           addOpts = true;
           ++i; continue;
@@ -550,6 +552,8 @@ function parse(expr) {
         if (expr[i + 1] === '}' && level[level.length - 1] === '}'
           && level[level.length - 2] === '}') 
         {
+          --levelOffset; --levelOffset;
+        
           if (token.val !== '') {
             token.pattern += '}';
             tokens.push(token);
@@ -657,7 +661,10 @@ function parse(expr) {
     ++i;
   }
   
-  if (token.val  !== '') tokens.push(token);
+  // If we have a valid token that hasn't yet been added to tokens, add it
+  if (token.val !== '' || token.type === 'object') {
+    tokens.push(token);
+  }
   
   tokens.forEach(function(token) {
     token.pattern = token.pattern.trim();

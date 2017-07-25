@@ -72,7 +72,7 @@ describe('Scope Modifiers', function() {
   describe('{} Braces Reserved Key Pattern', function() {
     before(function() {
       map = {
-        "variantColors{Product.variants}": {
+        "{{variant}}{{'Colors'}}{Product.variants}": {
           "'color'": "color"
         }
       };    
