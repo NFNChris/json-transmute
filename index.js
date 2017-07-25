@@ -9,7 +9,11 @@ function transmute(scope, map, target, rootScope) {
   rootScope = rootScope || scope;
   
   if ('@root' in map) {
-    rootScope = resolve(map['@root'], rootScope, rootScope).val;
+    if (map['@root'] === '@path') {
+      rootScope = scope;
+    } else {
+      rootScope = resolve(map['@root'], rootScope, rootScope).val;
+    }
   }
 
   if ('@path' in map) {
