@@ -25,27 +25,38 @@ function transmute(scope, map, target, rootScope) {
   }
   
   /** Ensure array format for scope */
-  var results = Array.isArray(scope) ? scope : [ scope ];
+  var scopeItems = Array.isArray(scope) ? scope : [ scope ];
 
   /** Iterate over each element in scope */
-  results.forEach(function(result, idx) {
-    var child = {};
-  
-    Object.keys(map || {}).forEach(function(key) {
-      var opts  = resolve(key, result, rootScope, true),
-          childVal = opts.type === 'array' ? [] : {};
-      
-      /** Recursively process object key values */
-      if (typeof map[key] === 'object') {
-        transmute(opts.scope, map[key], childVal, rootScope);
+  scopeItems.forEach(function(scopeItem, idx) {
+    var mapIsArr = Array.isArray(map) ? true : false,
+        mapItems = mapIsArr ? map : Object.keys(map || {}),
+        child = {};
+        
+    // Iterate over each map value (array element or object key)    
+    mapItems.forEach(function(mapKey) {
+      var mapVal = mapIsArr ? mapKey : map[mapKey],
+          keyOpts = mapIsArr ? {} : resolve(mapKey, scopeItem, rootScope, true),
+          childVal = Array.isArray(mapVal) ? [] : {},
+          childScope = mapIsArr ? scopeItem : keyOpts.scope;
+          
+      // Recursively process object key values
+      if (typeof mapVal === 'object') {
+        transmute(childScope, mapVal, childVal, rootScope);
       } else {
-        childVal = resolve(map[key], opts.scope, rootScope).val;
+        childVal = resolve(mapVal, childScope, rootScope).val;
       }
       
-      assign(Array.isArray(target) ? child : target, childVal, opts);
+      // Assign transmuted value to target object
+      if (mapIsArr) {
+        target.push(childVal);
+      } else {
+        assign(Array.isArray(target) ? child : target, childVal, keyOpts);
+      }
     });
 
-    if (Array.isArray(target) && !((Array.isArray(child) && !child.length) 
+    if (!mapIsArr && Array.isArray(target) 
+      && !((Array.isArray(child) && !child.length) 
       || (typeof child === 'object' && !Object.keys(child).length))) {
         target.push(child);
     }
@@ -54,9 +65,10 @@ function transmute(scope, map, target, rootScope) {
   return target;
 }
 
-function assign(parent, val, opts) {
+// Ensure object tree exists as dictated by the key
+function assign(parent, val, keyOpts) {
   var target   = parent,
-      keyParts = opts.val.toString().split('.');
+      keyParts = keyOpts.val.toString().split('.');
    
   keyParts.forEach(function(keyPart, idx) {
     if (keyParts.length === idx + 1) {
@@ -90,12 +102,10 @@ function resolve(expr, scope, rootScope, isKey) {
         
     /** Process token by token type */
     switch (token.type) {
-      case 'array':
-        type = 'array';
-      case 'object':
-        if (token.opts.length) {
-          childScope = resolve(token.opts[0], scope, rootScope).val;
-        }
+      case 'scope':
+        childScope = resolve(token.opts[0], scope, rootScope).val;
+        result = resolve(token.val, childScope, rootScope, isKey).val;
+      break;
       case 'lookup':
         result = token.root ? rootScope : scope; 
         token.val.split('.').some(function(key) {
@@ -113,6 +123,9 @@ function resolve(expr, scope, rootScope, isKey) {
         } else if (typeof result === 'object') {
           result = JSON.parse(JSON.stringify(result));
         }
+      break;
+      case 'expression':
+        result = resolve(token.val, scope, rootScope, isKey).val;
       break;
       case 'filter':
         result = filter(token.val, token.opts, scope, rootScope);
@@ -448,7 +461,6 @@ function parse(expr) {
       level       = [],
       addOpts     = false,
       addFilter   = false,
-      levelOffset = 0,
       i           = 0,
       filter;
       
@@ -488,14 +500,14 @@ function parse(expr) {
         if (level[level.length - 1] === '\'') {
           level.pop();
 
-          if (level.length - levelOffset === 0) {
+          if (level.length === 0) {
             token.type = 'static';
             ++i; continue;
           }          
         } else {
           level.push('\'');
 
-          if (level.length - levelOffset === 1) {
+          if (level.length === 1) {
             ++i; continue;
           }
         }        
@@ -520,18 +532,17 @@ function parse(expr) {
       break;
       case '[':
         level.push(']');
-        if (level.length === 1 && token.val !== '') {
-          token.type = 'array';
+        if (level.length === 1) {
+          token.type = 'scope';
           addOpts = true;
           ++i; continue;
         }
       break;
       case '{':
         level.push('}');
-
+      
         /** Check for handlebar opening token notation */
-        if (level.length - levelOffset === 1 && expr[i + 1] === '{') {
-          ++levelOffset; ++levelOffset;
+        if (level.length === 1 && expr[i + 1] === '{') {
 
           /** Remove opening bracket from replacement pattern string */
           if (token.val !== '') {
@@ -542,49 +553,39 @@ function parse(expr) {
           /** Initialize a new token */
           token = getNewToken();
           token.pattern += "{{";
+          token.type = "expression";
 
           /** Advance expr pointer past handlebar opening notation */
-          level.push('}');
+          level[level.length - 1] = '}}';
           ++i; ++i; continue;
-        }
-
-        /** Check for object notation */
-        if (level.length === 1 && (token.val !== '' || tokens.length)) {
-          token.type = 'object';
-          addOpts = true;
-          ++i; continue;
         }
       break;
       case '}':
         /** Check for handlebar closing token notation */
-        if (expr[i + 1] === '}' && level[level.length - 1] === '}'
-          && level[level.length - 2] === '}') 
-        {
-          --levelOffset; --levelOffset;
-        
+        if (expr[i + 1] === '}' && level[level.length - 1] === '}}') {
           if (token.val !== '') {
             token.pattern += '}';
             tokens.push(token);
           }
           
           token = getNewToken();
-          ++i; ++i; level.pop(); level.pop();
+          ++i; ++i; level.pop();
           continue;
         }
-      case ')':
       case ']':
+      case ')':
         if (level[level.length - 1] === expr[i]) {
           level.pop();
         }
         
-        if (addOpts && !level.length) {
+        if (addOpts && level.length === 0) {
           addOpts = false;
           ++i; continue;
         }
       break;
       case ' ':      
         /** A space at root level is a token delimeter */        
-        if (!level.length) {
+        if (level.length === 0) {
         
           /** If a pipe was previously found, parse token as filter */
           if (addFilter) {
@@ -625,7 +626,7 @@ function parse(expr) {
       break;
       case '|':      
         /** A pipe at root level signifies the application of a filter */
-        if (!level.length) {
+        if (level.length === 0) {
           /** Restore previous token */
           if (tokens.length && token.val === '') {
             token = tokens.pop();

@@ -42,12 +42,14 @@ var scope = {
 
 
 var map = {
-  "productArr[Product.variants]": {
-    "title": "^Product.title",
-    "price": "^Product.price",
-    "'color'": "color",
-    "inStock": "stock | bool"
-  }
+  "productArr[Product.variants]": [
+    {
+      "title": "^Product.title",
+      "price": "^Product.price",
+      "'color'": "color",
+      "inStock": "stock | bool"
+    }
+  ]
 };
 
 var simpleData = transmute(scope, map);
@@ -77,7 +79,7 @@ var simpleData = transmute(scope, map);
 ```
 ## Expressions
 
-Expressions enable us to extract data from our Scope object (source data) and transform / restructure it into our target data structure via JSON mappings.  Expressions may be used within both map keys and values similarly, with the exception that expressions within keys support additional Scope Modifiers (more on that in the next section).
+Expressions enable us to extract data from our Scope object (source data) and transform / restructure it into our target data structure via JSON mappings.  Expressions may be used within both map keys and values similarly, with some caveats with respect to expressions in keys that are discussed in more depth below.
 
 ### Operators
 
@@ -85,13 +87,11 @@ Operator|Example       | Expression Handling
 --------|--------------|------------
 '|'expr' | Not evaluated
 ^|^expr | Evaluated against Scope at the root / top level
-.|expr1.expr2 | Chainable direct child element selector
+.|expr1.expr2 | Chainable direct child element selector. May be used to directly access array elements (e.g. `expr.0` or `expr.5`)
 &#124;|expr1 &#124; expr2 | Chainable filter processing
-[]|expr1[expr2] | __**Value Only**__ Array element (expr2) selector
-[]|expr1[expr2] | __**Key Only**__ Scope modifier (expr2) for child array
-{}|expr1{expr2} | __**Key Only**__ Scope modifier (expr2) for child object
-{{}}|{{expr1}}{{expr2}} | Expression delimiter
-__space__ | expr1 expr2 | Expression delimieter
+[]|[expr1]expr2 | Modifies scope to expr1 for following (or preceding) expr2. Can be used within escaped `{{}}` expressions.
+{{}}|{{expr1}}{{expr2}} | Expression escape delimiter. May be nested.
+__space__ | expr1 expr2 | Expression delimiter. Can be used in conjunction with leading or trailing `[]` scope modifier
 
 ### Filter Functions
 
@@ -147,7 +147,7 @@ values | Formats piped value as an array. Objects are converted to an array of k
 
 ## Scope Modifiers
 
-Only the root level of the Scope object is checked for map references by default.  Modify the scope by specifying the reserved `@path` or `@root` key.  
+Only the root level of the Scope object is checked for map references by default.  Modify the scope by specifying the reserved `@path` or `@root` key.
 
 ### @path
 
@@ -175,15 +175,15 @@ var map = {
 // { "title": "ACME super soaker" }
 ```
 
-Alternatively you may use Curly Brace or Bracket Notation which result in the generation of a child object or array respectively.  The expression included within braces or brackets modifies Scope for all child elements.
+Alternatively you may use Bracket Notation `[]` which may be used inline in both key and key values.  When used within keys, the scope change is inherited by child elements.
 
-### [] Bracket Reserved Key Pattern Notation
+### [] Bracket Inline Scope Modification
 
 ```javascript
 map = { 
-  "variantColors[Product.variants]": {
-    "'color'": "color"
-  }
+  "variantColors[Product.variants]": [
+    { "'color'": "color" }
+  ]
 };
 
 // {
@@ -192,22 +192,6 @@ map = {
 //     { "color": "blue" },
 //     { "color": "green" }
 //   ]
-// }
-```
-
-### {} Brace Reserved Key Pattern Notation
-
-```javascript
-map = { 
-  "variantColor{Product.variants}": {
-    "'color'": "color"
-  }
-};
-
-// {
-//   "variantColor": { 
-//     "color": "green"
-//   }
 // }
 ```
 

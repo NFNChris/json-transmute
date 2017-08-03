@@ -51,39 +51,48 @@ describe('Scope Modifiers', function() {
     });
   });
   
-  describe('[] Bracket Reserved Key Pattern', function() {
+  describe('[] Bracket Scope Modifier', function() {
     before(function() {
       map = {
-        "variantColors[Product.variants]": {
-          "'color'": "color"
-        }
+        "filter1": "[Product.variants.0]color",
+        "filter2[Product.variants.0]": "color",
+        "filter3": "[Product.variants.0]color [Product.variants.1]color",
       };    
     });
     
-    it('should update child scope', function() {
-      expect(result.variantColors[0].color).to.equal('red');
+    it('should process inline value scope changes preceding an expression', function() {
+      expect(result.filter1).to.equal('red');
     });
-    
-    it('should define result value as array', function() {
-      expect(result.variantColors).to.be.an('array');
+
+    it('should process inline key scope changes for child values', function() {
+      expect(result.filter2).to.equal('red');
+    });
+
+    it('should process multiple inline scope changes', function() {
+      console.log(result);
+      expect(result.filter3).to.equal('red blue');
     });
   });
   
-  describe('{} Braces Reserved Key Pattern', function() {
+  describe('{{}} Expression Escape Delimeter', function() {
     before(function() {
       map = {
-        "{{variant}}{{'Colors'}}{Product.variants}": {
-          "'color'": "color"
-        }
+        "filter1": "{{'red' | uppercase}}{{'blue' | lowercase}}",        
+        "filter2": "{{{{{{'red'}} | uppercase}}{{'blue' | lowercase}}}}",
+        "filter3": "{{[Product.variants.0]color | uppercase}}{{[Product.variants.1]color | lowercase}}"
       };    
     });
     
-    it('should update child scope', function() {
-      expect(result.variantColors.color).to.equal('green');
+    it('should allow multiple consecutive escaped expressions', function() {
+      expect(result.filter1).to.equal('REDblue');
     });
     
-    it('should define result value as object', function() {
-      expect(result.variantColors).to.be.an('object');
+    it('should allow nested expressions', function() {
+      expect(result.filter2).to.equal('REDblue');
+    });
+
+    it('should allow scope changes within escaped expressions', function() {
+      expect(result.filter3).to.equal('REDblue');
     });
   });  
 });
@@ -513,6 +522,43 @@ describe('References', function() {
     });    
   });
   
+  describe('#Array', function() {
+    before(function() { 
+      map = { 
+        "filter1[Product.variants]": [ "color" ],
+        "filter2[Product.variants]": [ { "'color'": "color" } ],
+        "filter3[Product.variants]": [ [ "color" ] ],
+        "filter4[Product.variants]": [ "color", { "'color'": "color" }, [ "color" ] ]
+      }; 
+    });
+
+    it('should ensure child is in array format', function() {
+      expect(result.filter1).to.deep.equal([ "red", "blue", "green" ]);
+    });    
+
+    it('should ensure child is in array format and support child objects', function() {
+      expect(result.filter2).to.deep.equal([ 
+        { "color": "red" }, 
+        { "color": "blue" }, 
+        { "color": "green" }
+      ]);
+    });
+
+    it('should ensure child is in array format and support child arrays', function() {
+      expect(result.filter3).to.deep.equal([ 
+        [ "red" ], [ "blue" ], [ "green" ],
+      ]);
+    });
+
+    it('should ensure child is in array format and support mixed types', function() {
+      expect(result.filter4).to.deep.equal([ 
+        "red", { "color": "red" }, [ "red" ],
+        "blue", { "color": "blue" }, [ "blue" ],
+        "green", { "color": "green" }, [ "green" ],
+      ]);
+    });
+  });
+    
   describe('#Undefined', function() {
     before(function() {
       map = {
