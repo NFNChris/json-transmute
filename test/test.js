@@ -8,6 +8,21 @@ beforeEach(function() {
   result = transmute(scope, map);
 });
 
+describe('Parser', function() {
+
+  describe('Operator characters', function() {
+    before(function() {
+      map = {
+        "filter1": { "key{with-brackets}": "'should work{}'" }
+      }; 
+    });
+    
+    it('should allow the use of single brackets in keys and values', function() {
+      expect(result.filter1).to.deep.equal({ "key{with-brackets}": "should work{}" });
+    });
+  });
+});
+
 describe('Scope Modifiers', function() {
   
   describe('@path Reserved Key', function() {
@@ -57,6 +72,7 @@ describe('Scope Modifiers', function() {
         "filter1": "[Product.variants.0]color",
         "filter2[Product.variants.0]": "color",
         "filter3": "[Product.variants.0]color [Product.variants.1]color",
+        "filter4": { "Product.title[Product.variants.0]": "color" }
       };    
     });
     
@@ -69,8 +85,11 @@ describe('Scope Modifiers', function() {
     });
 
     it('should process multiple inline scope changes', function() {
-      console.log(result);
       expect(result.filter3).to.equal('red blue');
+    });
+
+    it('should resolve scope lookups inline with scope changes', function() {
+      expect(result.filter4).to.deep.equal({ "ACME super soaker": "red" });
     });
   });
   
@@ -133,7 +152,7 @@ describe('Filters', function() {
       map = { "filter": "'acme' | concat(' ','super',' ','soaker')" }; 
     });
 
-    it('should return a string catenation of a piped value combined with one or more additional parameter values', function() {
+    it('should return a string concatenation of a piped value combined with one or more additional parameter values', function() {
       expect(result.filter).to.equal('acme super soaker');
     });
   });

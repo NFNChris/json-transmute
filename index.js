@@ -95,19 +95,19 @@ function resolve(expr, scope, rootScope, isKey) {
       resolved = expr,
       childScope = scope,
       type = 'object';
-      
+  
   /** Iterate over each expression token returned by parse() */
   tokens.forEach(function(token) {
     var root;
-        
+
     /** Process token by token type */
     switch (token.type) {
       case 'scope':
-        childScope = resolve(token.opts[0], scope, rootScope).val;
-        result = resolve(token.val, childScope, rootScope, isKey).val;
+        childScope = resolve(token.val, scope, rootScope).val;
+        result = '';
       break;
       case 'lookup':
-        result = token.root ? rootScope : scope; 
+        result = token.root ? rootScope : childScope;
         token.val.split('.').some(function(key) {
           if (typeof result === 'object' && key in result) {
             result = result[key];
@@ -125,10 +125,10 @@ function resolve(expr, scope, rootScope, isKey) {
         }
       break;
       case 'expression':
-        result = resolve(token.val, scope, rootScope, isKey).val;
+        result = resolve(token.val, childScope, rootScope, isKey).val;
       break;
       case 'filter':
-        result = filter(token.val, token.opts, scope, rootScope);
+        result = filter(token.val, token.opts, childScope, rootScope);
       break;
       case 'static':
         result = token.val;
@@ -140,7 +140,7 @@ function resolve(expr, scope, rootScope, isKey) {
       var val  = tokenFilter.val,
           opts = tokenFilter.opts;
           
-      result = filter(val, opts, scope, rootScope, result);
+      result = filter(val, opts, childScope, rootScope, result);
     });
     
     /** Replace token pattern in expression with result */
@@ -265,7 +265,7 @@ function filter(type, params, scope, rootScope, result) {
       result = result > params[0];
     break;
     case 'hash':
-      var hashStr = JSON.stringify(result);
+      var hashStr = JSON.stringify(result || '');
       result = crypto.createHash('md5').update(hashStr).digest('hex');
     break;
     case 'if':
@@ -312,7 +312,7 @@ function filter(type, params, scope, rootScope, result) {
       result = ( Array.isArray(result) ? result : [ result ] ).pop();
     break;
     case 'prune':
-      Object.keys(result).forEach(function(key) {
+      Object.keys(result || {}).forEach(function(key) {
         if (params.indexOf(key) < 0) delete result[key];
       });      
     break;
@@ -530,11 +530,19 @@ function parse(expr) {
           ++i; continue;
         }
       break;
-      case '[':
-        level.push(']');
-        if (level.length === 1) {
+      case '[':        
+        if (!level.length) {
+          level.push(']');
+
+          if (token.val !== '') {
+            token.pattern = token.pattern.slice(0, -1);
+            tokens.push(token);
+          }
+        
+          token = getNewToken();
+          token.pattern += "[";
           token.type = 'scope';
-          addOpts = true;
+
           ++i; continue;
         }
       break;
@@ -571,8 +579,18 @@ function parse(expr) {
           token = getNewToken();
           ++i; ++i; level.pop();
           continue;
+        } else if (level[level.length - 1] === '}') {
+          level.pop();
         }
+      break;
       case ']':
+        if (level.length === 1 && level[0] === expr[i]) {
+          level.pop();
+          tokens.push(token);
+          token = getNewToken();
+          ++i; continue;
+        }
+      break;
       case ')':
         if (level[level.length - 1] === expr[i]) {
           level.pop();
