@@ -381,7 +381,7 @@ function filter(type, params, scope, rootScope, result) {
       if ((result || '').match(expr)) {
         result = result.replace(expr, params[1]);
       } else {
-        result = params[2];
+        if (params[2]) result = params[2];
       }
     break;
     case 'set':

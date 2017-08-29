@@ -448,11 +448,15 @@ describe('Filters', function() {
 
   describe('#replace()', function() {
     before(function() { 
-      map = { "filter": "'ACME super soakers are the worst' | replace('worst', 'best')" }; 
+      map = { 
+        "filter1": "'ACME super soakers are the worst' | replace('worst', 'best')",
+        "filter2": "'ACME super soakers are the worst' | replace('best', 'worst')"
+      }; 
     });
 
     it('should return `.replace(x1, x2)` of the piped string', function() {
-      expect(result.filter).to.equal('ACME super soakers are the best');
+      expect(result.filter1).to.equal('ACME super soakers are the best');
+      expect(result.filter2).to.equal('ACME super soakers are the worst');
     });
   });
 

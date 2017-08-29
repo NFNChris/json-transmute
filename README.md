@@ -140,7 +140,7 @@ slice(x1,x2) | Returns `.slice(x1, x2)` of the piped array or string
 split(x1) | Returns `.split(x1)` of the piped string.  Default split character is `,`
 subtract(x1,x2,..xn) | Subtract one or more values from a piped value
 reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", or "smallest" (specified by x2) value.  In the absence of key x1, element values will be compared directly
-replace(x1,x2) | Returns `.replace(x1, x2)` of the piped string
+replace(x1,x2,x3) | Returns `.replace(x1, x2)` of the piped string.  Defaults to x3 (if specified) or the original piped value if no expression match for x1
 trim | Removes leading and trailing whitespace from the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
 values | Formats piped value as an array. Objects are converted to an array of key values
