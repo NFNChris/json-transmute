@@ -128,7 +128,11 @@ describe('Scope Modifiers', function() {
       map = {
         "filter1": "{{'red' | uppercase}}{{'blue' | lowercase}}",        
         "filter2": "{{{{{{'red'}} | uppercase}}{{'blue' | lowercase}}}}",
-        "filter3": "{{[Product.variants.0]color | uppercase}}{{[Product.variants.1]color | lowercase}}"
+        "filter3": "{{[Product.variants.0]color | uppercase}}{{[Product.variants.1]color | lowercase}}",
+        "filter4": {
+          "@path": "Product.shipping.options",
+          "tags": "{{^Product.tags}}"
+        }
       };    
     });
     
@@ -140,8 +144,12 @@ describe('Scope Modifiers', function() {
       expect(result.filter2).to.equal('REDblue');
     });
 
-    it('should allow scope changes within escaped expressions', function() {
+    it('should allow bracketed scope changes within escaped expressions', function() {
       expect(result.filter3).to.equal('REDblue');
+    });
+
+    it('should allow ^ root scope changes within escaped expressions', function() {
+      expect(result.filter4.tags).to.equal('Mens,Shirt,Casual');
     });
   });  
 });

@@ -122,7 +122,7 @@ function resolve(expr, scope, rootScope, isKey) {
   /** Iterate over each expression token returned by parse() */
   tokens.forEach(function(token) {
     var root;
-
+    
     /** Process token by token type */
     switch (token.type) {
       case 'scope':
@@ -149,7 +149,9 @@ function resolve(expr, scope, rootScope, isKey) {
         }
       break;
       case 'expression':
-        result = resolve(token.val, childScope, rootScope, isKey).val;
+        result = resolve(
+          token.val, token.root ? rootScope : childScope, rootScope, isKey
+        ).val;
       break;
       case 'filter':
         result = filter(token.val, token.opts, childScope, rootScope);
