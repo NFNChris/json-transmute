@@ -14,6 +14,22 @@
         "economy": { "name": "Free Economy Shipping", "cost": "0.00" }
       }
     },
+    "carriers": [
+      { "name": "FedEx", "services": 
+        [ 
+          { "name": "Three Day", "days": "3", "code": "F3" },
+          { "name": "Two Day", "days": "2", "code": "F2" },
+          { "name": "Next Day", "days": "1", "code": "F1" }
+        ]
+      },
+      { "name": "UPS", "services": 
+        [ 
+          { "name": "Three Day", "days": "3", "code": "U3" },
+          { "name": "Two Day", "days": "2", "code": "U2" },
+          { "name": "Next Day", "days": "1", "code": "U1" }
+        ]
+      }
+    ],
     "tags": "Mens,Shirt,Casual"
   }
 }  

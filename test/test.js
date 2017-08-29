@@ -33,10 +33,19 @@ describe('Scope Modifiers', function() {
         "cheapestShippingCost": "economy.cost",
         "expeditedShippingOptions": { 
           "'nextDay'": "nextDay" 
+        },
+        "revert": {
+          "@path": "@root",
+          "'title'": "Product.title"
+        },
+        "siblingArr[^Product.carriers | filter('name', '=', 'FedEx')]": {
+          "@root": "@path",
+          "@path": "services",
+          "^name name": "days"
         }
       }; 
     });
-    
+
     it('should update scope for sibling elements', function() {
       expect(result.cheapestShippingCost).to.equal('0.00');
     });
@@ -44,8 +53,20 @@ describe('Scope Modifiers', function() {
     it('should update scope for child elements', function() {
       expect(result.expeditedShippingOptions.nextDay.cost).to.equal('45.00');
     });
+
+    it('should support reverting to root scope', function() {
+      expect(result.revert.title).to.equal('ACME super soaker');
+    });
+
+    it('should iterate over siblings for each item in @path scope', function() {
+      expect(result.siblingArr).to.deep.equal({ 
+        "FedEx Next Day": "1",
+        "FedEx Two Day": "2",
+        "FedEx Three Day": "3"
+      });
+    });
   });
-  
+    
   describe('@root Reserved Key', function() {
     before(function() {
       map = {
@@ -53,6 +74,11 @@ describe('Scope Modifiers', function() {
         "cheapestShippingCost": "^economy.cost",
         "expeditedShippingCosts": { 
           "'nextDay'": "^nextDay.cost" 
+        },
+        "revert": {
+          "@root": "@path",
+          "@path": "Product",
+          "'title'": "^Product.title"
         }
       }; 
     });
@@ -63,6 +89,10 @@ describe('Scope Modifiers', function() {
 
     it('should update root scope for child elements', function() {
       expect(result.expeditedShippingCosts.nextDay).to.equal('45.00');
+    });
+
+    it('should support reverting to path scope', function() {
+      expect(result.revert.title).to.equal('ACME super soaker');
     });
   });
   

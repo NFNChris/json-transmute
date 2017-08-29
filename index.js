@@ -4,33 +4,18 @@ module.exports = function(scope, map) {
   return transmute(scope, map);
 }
 
-function transmute(scope, map, target, rootScope) {
+function transmute(scope, map, target, rootScope, skipKeys) {
   target    = target    || {};
   rootScope = rootScope || scope;
   
-  if ('@root' in map) {
-    if (map['@root'] === '@path') {
-      rootScope = scope;
-    } else {
-      rootScope = resolve(map['@root'], rootScope, rootScope).val;
-    }
-  }
-
-  if ('@path' in map) {
-    if (map['@path'] === '@root') {
-      scope = rootScope;
-    } else {
-      scope = resolve(map['@path'], scope, rootScope).val;
-    }
-  }
-  
   /** Ensure array format for scope */
   var scopeItems = Array.isArray(scope) ? scope : [ scope ];
-
+  
   /** Iterate over each element in scope */
   scopeItems.forEach(function(scopeItem, idx) {
     var mapIsArr = Array.isArray(map) ? true : false,
         mapItems = mapIsArr ? map : Object.keys(map || {}),
+        pathIsArr = false,
         child = {};
         
     // Iterate over each map value (array element or object key)    
@@ -39,6 +24,44 @@ function transmute(scope, map, target, rootScope) {
           keyOpts = mapIsArr ? {} : resolve(mapKey, scopeItem, rootScope, true),
           childVal = Array.isArray(mapVal) ? [] : {},
           childScope = mapIsArr ? scopeItem : keyOpts.scope;
+          
+      // If the current key was specified in skipKeys do nothing
+      if (skipKeys && mapKey in skipKeys) return; 
+      
+      // If a path modifier has been invoked that points to an array, then 
+      // we handle mapping recursively and do nothing more here.
+      if (pathIsArr) return;
+          
+      // Remove / skip reserved keys
+      if (keyOpts && keyOpts.val && keyOpts.val[0] === '@') {
+        if (mapKey === '@root') {
+          if (map['@root'] === '@path') {
+            rootScope = scopeItem;
+          } else {
+            rootScope = resolve(map['@root'], rootScope, rootScope).val;
+          }
+        }
+
+        if (mapKey === '@path') {
+          if (map['@path'] === '@root') {
+            scopeItem = rootScope;
+          } else {          
+            scopeItem = resolve(map['@path'], scopeItem, rootScope).val;
+            
+            if (Array.isArray(scopeItem)) {
+              pathIsArr = true;            
+              scopeItem.forEach(function(scopeItemChild) {
+                transmute(scopeItemChild, map, target, rootScope, { 
+                  '@path': true,
+                  '@root': true
+                })
+              });
+            }
+          }
+        }
+  
+        return;      
+      };
           
       // Recursively process object key values
       if (typeof mapVal === 'object') {
@@ -103,7 +126,8 @@ function resolve(expr, scope, rootScope, isKey) {
     /** Process token by token type */
     switch (token.type) {
       case 'scope':
-        childScope = resolve(token.val, scope, rootScope).val;
+        childScope = 
+          resolve(token.val, token.root ? rootScope : scope, rootScope).val;
         result = '';
       break;
       case 'lookup':
