@@ -64,7 +64,7 @@ function transmute(scope, map, target, rootScope, skipKeys) {
       };
           
       // Recursively process object key values
-      if (typeof mapVal === 'object') {
+      if (mapVal && typeof mapVal === 'object') {
         transmute(childScope, mapVal, childVal, rootScope);
       } else {
         childVal = resolve(mapVal, childScope, rootScope).val;
@@ -80,7 +80,7 @@ function transmute(scope, map, target, rootScope, skipKeys) {
 
     if (!mapIsArr && Array.isArray(target) 
       && !((Array.isArray(child) && !child.length) 
-      || (typeof child === 'object' && !Object.keys(child).length))) {
+      || (child && typeof child === 'object' && !Object.keys(child).length))) {
         target.push(child);
     }
   });
@@ -144,7 +144,7 @@ function resolve(expr, scope, rootScope, isKey) {
         // If result is an object, make a copy to preserve source scope data
         if (Array.isArray(result)) {
           result = result.slice();
-        } else if (typeof result === 'object') {
+        } else if (result && typeof result === 'object') {
           result = JSON.parse(JSON.stringify(result));
         }
       break;
@@ -208,7 +208,7 @@ function filter(type, params, scope, rootScope, result) {
     case 'count':
       if (Array.isArray(result) || typeof result === 'string') {
         result = result.length;
-      } else if (typeof result === 'object') {
+      } else if (result && typeof result === 'object') {
         result = Object.keys(result);
       } else {
         result = result ? 1 : 0;
@@ -283,7 +283,7 @@ function filter(type, params, scope, rootScope, result) {
     case 'get':
       if (Array.isArray(result) || typeof result === 'string') {
         result = result[parseInt(params[0] || 0)];
-      } else if (typeof result === 'object') {
+      } else if (result && typeof result === 'object') {
         result = result[params[0]];
       }
     break;
@@ -394,7 +394,7 @@ function filter(type, params, scope, rootScope, result) {
         result[idx] = val;
       } else if (typeof result === 'string') {
         result = result.substr(0, idx) + val + result.substr(idx + val.length);
-      } else if (typeof result === 'object') {
+      } else if (result && typeof result === 'object') {
         result[params[0]] = val;
       }
     break;
@@ -469,7 +469,7 @@ function isTruthy(val) {
           truthy = true;
         }
       } else {
-        if (Object.keys(val).length > 0) {
+        if (Object.keys(val || {}).length > 0) {
           truthy = true;
         }
       }
