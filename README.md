@@ -119,7 +119,7 @@ divide(x1,x2,..xn) | Divide one or more values from a piped value
 eq(x1) | Returns true if piped value == x1
 filter(x1,x2,x3) | Filter a piped array of objects to include only those elements having a key x1 value that tests x2: ">", ">=", "=", "<=", or "!=" relative to x3
 float(x1) | Float format a piped value with precision x1 (or 2 if x1 is not specified)
-get(x1) | Returns element x1 from a piped object, array, or string
+get(x1) | Returns element x1 from a piped object, array, or string. May also be used without a piped value to reference field values in scope - useful when field names included spaces etc.
 gt(x1) | Returns true if piped value is greater than value x1
 hash | Returns a md5 hash string based upon the piped value
 if(x1,x2) | Returns x1 if piped value is true, otherwise returns x2
@@ -135,12 +135,12 @@ pluck(x1) | Returns an array of key values from a piped array of objects having 
 pop | Returns the last element in an array
 prune(x1,x2,..xn) | Removes all key values from the piped object not specified as a parameter 
 push(x1,x2,..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
+reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", or "smallest" (specified by x2) value.  In the absence of key x1, element values will be compared directly
+replace(x1,x2,x3) | Returns `.replace(x1, x2)` of the piped string.  Defaults to x3 (if specified) or the original piped value if no expression match for x1
 set(x1, x2) | Sets element x1 from a piped object, array, or string equal to x2 
 slice(x1,x2) | Returns `.slice(x1, x2)` of the piped array or string
 split(x1) | Returns `.split(x1)` of the piped string.  Default split character is `,`
 subtract(x1,x2,..xn) | Subtract one or more values from a piped value
-reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", or "smallest" (specified by x2) value.  In the absence of key x1, element values will be compared directly
-replace(x1,x2,x3) | Returns `.replace(x1, x2)` of the piped string.  Defaults to x3 (if specified) or the original piped value if no expression match for x1
 trim | Removes leading and trailing whitespace from the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
 values | Formats piped value as an array. Objects are converted to an array of key values

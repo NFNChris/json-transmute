@@ -290,7 +290,8 @@ describe('Filters', function() {
       map = { 
         "filter1": "Product.variants | get('2')",
         "filter2": "Product.title | get('2')",
-        "filter3": "Product | get('tags')"
+        "filter3": "Product | get('tags')",
+        "filter4": "get('Meta')"
       }; 
     });
 
@@ -298,6 +299,7 @@ describe('Filters', function() {
       expect(result.filter1).to.deep.equal({ "color": "green", "stock": "0" });
       expect(result.filter2).to.equal("M");
       expect(result.filter3).to.equal("Mens,Shirt,Casual");
+      expect(result.filter4).to.equal("Products");
     });
   });
 
