@@ -308,6 +308,9 @@ function filter(type, params, scope, rootScope, result) {
     case 'join':
       result = (result || '').join(params[0] || ',');
     break;
+    case 'json':
+      result = JSON.parse(result);
+    break;
     case 'lt':
       return result < params[0];
     break;

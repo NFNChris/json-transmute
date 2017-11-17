@@ -366,6 +366,16 @@ describe('Filters', function() {
     });
   });
 
+  describe('#json()', function() {
+    before(function() { 
+      map = { "filter": "EmbeddedJSON | json" }; 
+    });
+
+    it('should return a json object parsed from an embedded json string', function() {
+      expect(result.filter.product).to.equal('test');
+    });
+  });
+
   describe('#lt()', function() {
     before(function() { 
       map = { "filter": "'1' | lt('2')" }; 
