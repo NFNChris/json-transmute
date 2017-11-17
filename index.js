@@ -281,12 +281,19 @@ function filter(type, params, scope, rootScope, result) {
       result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
     case 'get':
-      result = result || scope;
-      if (Array.isArray(result) || typeof result === 'string') {
-        result = result[parseInt(params[0] || 0)];
-      } else if (result && typeof result === 'object') {
-        result = result[params[0]];
-      }
+      result = result || scope;      
+      params[0].split('.').some(function(key) {
+        var intKey = parseInt(params[0] || 0);
+        if (result && typeof result === 'object' && key in result) {
+          result = result[key];
+        } else if ((Array.isArray(result) && result.includes(intKey)) 
+          || (typeof result === 'string' && intKey < result.length)) {
+          result = result[intKey];
+        } else {
+          result = undefined;
+          return true;
+        }
+      });      
     break;
     case 'gt':
       result = result > params[0];

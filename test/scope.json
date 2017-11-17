@@ -32,7 +32,6 @@
     ],
     "tags": "Mens,Shirt,Casual"
   },
-  "EmbeddedJSON": "{ \"product\": \"test\" }",
-  "Meta": "Products"
+  "EmbeddedJSON": "{ \"product\": \"test\" }"
 }  
   
