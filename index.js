@@ -154,7 +154,9 @@ function resolve(expr, scope, rootScope, isKey) {
         ).val;
       break;
       case 'filter':
-        result = filter(token.val, token.opts, childScope, rootScope);
+        result = filter(
+          token.val, token.opts, childScope, rootScope, childScope
+        );
       break;
       case 'static':
         result = token.val;
@@ -281,7 +283,6 @@ function filter(type, params, scope, rootScope, result) {
       result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
     case 'get':
-      result = result || scope;      
       params[0].split('.').some(function(key) {
         var intKey = parseInt(params[0] || 0);
         if (result && typeof result === 'object' && key in result) {
