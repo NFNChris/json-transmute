@@ -249,29 +249,31 @@ function filter(type, params, scope, rootScope, result) {
       var filtered = [];
       
       ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
-        if (!item || !(params[0] in item)) return;
+        var itemVal = lookup(params[0], item);
+        
+        if (!item || !itemVal) return;
         
         switch (params[1]) {
           case '=':
-            if (item[params[0]] == params[2]) filtered.push(item);
+            if (itemVal == params[2]) filtered.push(item);
           break;
           case '!=':
-            if (item[params[0]] != params[2]) filtered.push(item);
+            if (itemVal != params[2]) filtered.push(item);
           break;
           case '>':
-            if (item[params[0]] > params[2]) filtered.push(item);
+            if (itemVal > params[2]) filtered.push(item);
           break;
           case '>=':
-            if (item[params[0]] >= params[2]) filtered.push(item);
+            if (itemVal >= params[2]) filtered.push(item);
           break;
           case '<':
-            if (item[params[0]] < params[2]) filtered.push(item);
+            if (itemVal < params[2]) filtered.push(item);
           break;
           case '<=':
-            if (item[params[0]] <= params[2]) filtered.push(item);
+            if (itemVal <= params[2]) filtered.push(item);
           break;
           default:
-            if (item[params[0]] == params[2]) filtered.push(item);
+            if (itemVal == params[2]) filtered.push(item);
           break;
         }
       });
@@ -283,18 +285,7 @@ function filter(type, params, scope, rootScope, result) {
       result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
     case 'get':
-      (params[0] || '').split('.').some(function(key) {
-        var intKey = parseInt(params[0] || 0);
-        if (result && typeof result === 'object' && key in result) {
-          result = result[key];
-        } else if ((Array.isArray(result) && result.includes(intKey)) 
-          || (typeof result === 'string' && intKey < result.length)) {
-          result = result[intKey];
-        } else {
-          result = undefined;
-          return true;
-        }
-      });      
+      result = lookup(params[0], result);    
     break;
     case 'gt':
       result = result > params[0];
@@ -492,6 +483,23 @@ function isTruthy(val) {
   }
 
   return truthy;  
+}
+
+function lookup(key, result) {
+  (key || '').split('.').some(function(key) {
+    var intKey = parseInt(key || 0);
+    if (result && typeof result === 'object' && key in result) {
+      result = result[key];
+    } else if ((Array.isArray(result) && result.includes(intKey)) 
+      || (typeof result === 'string' && intKey < result.length)) {
+      result = result[intKey];
+    } else {
+      result = undefined;
+      return true;
+    }
+  });
+  
+  return result;
 }
 
 function parse(expr) {
