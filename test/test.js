@@ -262,7 +262,7 @@ describe('Filters', function() {
         "filter2": "Product.variants | filter('stock', '>=', '0')",
         "filter3": "Product.variants | filter('stock', '=', '0')",
         "filter4": "Product.variants | filter('stock', '<', '3')",
-        "filter6": "Product.variants | filter('stock', '<=', '3')"
+        "filter5": "Product.variants | filter('stock', '<=', '3')"
       }; 
     });
 
@@ -271,7 +271,7 @@ describe('Filters', function() {
       expect(result.filter2).to.eql([ { color: 'red', stock: '5'}, { color: 'blue', stock: '3' }, { color: 'green', stock: '0' } ]);
       expect(result.filter3).to.eql([ { color: 'green', stock: '0' } ]);
       expect(result.filter4).to.eql([ { color: 'green', stock: '0' } ]);
-      expect(result.filter6).to.eql([ { color: 'blue', stock: '3' }, { color: 'green', stock: '0' } ]);
+      expect(result.filter5).to.eql([ { color: 'blue', stock: '3' }, { color: 'green', stock: '0' } ]);
     });
   });
 
