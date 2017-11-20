@@ -488,11 +488,12 @@ function isTruthy(val) {
 function lookup(key, result) {
   (key || '').split('.').some(function(key) {
     var intKey = parseInt(key || 0);
-    if (result && typeof result === 'object' && key in result) {
-      result = result[key];
-    } else if ((Array.isArray(result) && result.includes(intKey)) 
-      || (typeof result === 'string' && intKey < result.length)) {
+    
+    if (result && ((Array.isArray(result) && intKey in result) 
+      || (typeof result === 'string' && intKey < result.length))) {
       result = result[intKey];
+    } else if (result && typeof result === 'object' && key in result) {
+      result = result[key];
     } else {
       result = undefined;
       return true;
