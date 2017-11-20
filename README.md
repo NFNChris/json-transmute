@@ -137,7 +137,7 @@ pop | Returns the last element in an array
 prune(x1,x2,..xn) | Removes all key values from the piped object not specified as a parameter 
 push(x1,x2,..xn) | Add one or more additional elements to a piped array.  Ensures piped value is in array format.
 reduce(x1,x2) | Reduce array of piped values to a single element where element key x1 has the "largest", or "smallest" (specified by x2) value.  In the absence of key x1, element values will be compared directly
-replace(x1,x2,x3) | Returns `.replace(x1, x2)` of the piped string.  Defaults to x3 (if specified) or the original piped value if no expression match for x1
+replace(x1,x2[,x3, x4]) | Returns `.replace(x1, x2)` of the piped string.  Defaults to x3 (if specified) or the original piped value if no expression match for x1. Use x4 to specify regular expression flags
 set(x1, x2) | Sets element x1 from a piped object, array, or string equal to x2 
 slice(x1,x2) | Returns `.slice(x1, x2)` of the piped array or string
 split(x1) | Returns `.split(x1)` of the piped string.  Default split character is `,`

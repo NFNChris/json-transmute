@@ -283,7 +283,7 @@ function filter(type, params, scope, rootScope, result) {
       result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
     case 'get':
-      params[0].split('.').some(function(key) {
+      (params[0] || '').split('.').some(function(key) {
         var intKey = parseInt(params[0] || 0);
         if (result && typeof result === 'object' && key in result) {
           result = result[key];
@@ -390,7 +390,7 @@ function filter(type, params, scope, rootScope, result) {
       result = val;
     break;
     case 'replace':    
-      var expr = new RegExp(params[0]);
+      var expr = new RegExp(params[0], params[3] || '');
           
       if ((result || '').match(expr)) {
         result = result.replace(expr, params[1]);
