@@ -376,6 +376,16 @@ describe('Filters', function() {
     });
   });
 
+  describe('#keys()', function() {
+    before(function() { 
+      map = { "filter": "Product.shipping.options | keys" }; 
+    });
+
+    it('should return an array of keys from the piped object', function() {
+      expect(result.filter).to.eql([ 'nextDay', 'secondDay', 'economy' ]);
+    });
+  });
+
   describe('#lt()', function() {
     before(function() { 
       map = { "filter": "'1' | lt('2')" }; 

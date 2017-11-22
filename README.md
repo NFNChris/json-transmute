@@ -127,6 +127,7 @@ increment | Increases piped value by 1
 int | Integer format a piped value
 join(x1) | Joins array elements from a piped value together into a string delimited by x1 (or `,` if x1 is not specified)
 json | Returns JSON.parse() on a piped value for embedded JSON
+keys | Returns an array of keys for the piped object
 lt(x1) | Returns true if piped value is less than value x1
 lowercase | Returns `.toLowerCase()` of the piped string
 multiply(x1,x2,..xn) | Multiply one or more values with a piped value

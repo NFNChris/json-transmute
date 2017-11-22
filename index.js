@@ -310,6 +310,11 @@ function filter(type, params, scope, rootScope, result) {
     case 'json':
       result = JSON.parse(result);
     break;
+    case 'keys':
+      if (typeof result === 'object') {
+        result = Object.keys(result || {});
+      }
+    break;
     case 'lt':
       return result < params[0];
     break;
