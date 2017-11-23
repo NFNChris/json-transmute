@@ -285,7 +285,11 @@ function filter(type, params, scope, rootScope, result) {
       result = parseFloat(result.toFixed(params[0] ? params[0] : 2));
     break;
     case 'get':
-      result = lookup(params[0], result);    
+      if (params.length) {
+        result = lookup(params[0], result);
+      } else {
+        result = scope;
+      }
     break;
     case 'gt':
       result = result > params[0];

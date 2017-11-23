@@ -291,7 +291,7 @@ describe('Filters', function() {
         "filter1": "Product.variants | get('2')",
         "filter2": "Product.title | get('2')",
         "filter3": "Product | get('tags')",
-        "filter4": "get('Product.title')",
+        "filter4": "get() | get('Product.title')"
       }; 
     });
 
