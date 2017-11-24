@@ -581,11 +581,15 @@ describe('Filters', function() {
 
   describe('#values()', function() {
     before(function() { 
-      map = { "filter": "Product.shipping.options | values | get('0')" }; 
+      map = { 
+        "filter1": "Product.shipping.options | values | get('0')", 
+        "filter2": "Product.shipping.options | values | get('0') | values('_key')" 
+      }; 
     });
 
     it('should format piped value as an array. Objects are converted to an array of key values', function() {
-      expect(result.filter).to.eql({ "name": "Next Day Air", "cost": "45.00", "_key": "nextDay" });
+      expect(result.filter1).to.eql({ "name": "Next Day Air", "cost": "45.00", "_key": "nextDay" });
+      expect(result.filter2).to.eql([ "Next Day Air", "45.00" ]);
     });
   });
 });

@@ -145,7 +145,7 @@ split(x1) | Returns `.split(x1)` of the piped string.  Default split character i
 subtract(x1,x2,..xn) | Subtract one or more values from a piped value
 trim | Removes leading and trailing whitespace from the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
-values | Formats piped value as an array. Objects are converted to an array of key values.  If the key values are themselves objects, the `_key` key is appended and references the parent key.
+values(x1) | Formats piped value as an array. Objects are converted to an array of key values, and any values for keys specified in x1 (comma delimited string) are excluded.  If the key values are themselves objects, the `_key` key is appended and references the parent key.
 
 ## Scope Modifiers
 

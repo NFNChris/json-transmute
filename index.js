@@ -436,13 +436,23 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'values':
       var values = [];
+      var exclude = {};
+      
+      if (params[0]) {
+        params[0].split(',').forEach(function(key) {
+          exclude[key] = true;
+        });
+      }
       
       if (result) {
         if (typeof result === 'object') {
           Object.keys(result).forEach(function(key) {
+            if (key in exclude) return;
+          
             if (typeof result[key] === 'object') {
               result[key]['_key'] = key;
             }
+            
             values.push(result[key]);
           });
         } else if (Array.isArray(result)) {
