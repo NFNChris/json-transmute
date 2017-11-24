@@ -440,6 +440,9 @@ function filter(type, params, scope, rootScope, result) {
       if (result) {
         if (typeof result === 'object') {
           Object.keys(result).forEach(function(key) {
+            if (typeof result[key] === 'object') {
+              result[key]['_key'] = key;
+            }
             values.push(result[key]);
           });
         } else if (Array.isArray(result)) {

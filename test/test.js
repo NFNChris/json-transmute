@@ -581,11 +581,11 @@ describe('Filters', function() {
 
   describe('#values()', function() {
     before(function() { 
-      map = { "filter": "Product.shipping.options | values" }; 
+      map = { "filter": "Product.shipping.options | values | get('0')" }; 
     });
 
     it('should format piped value as an array. Objects are converted to an array of key values', function() {
-      expect(result.filter).to.eql([ { "name": "Next Day Air", "cost": "45.00" }, { "name": "Second Day Air", "cost": "30.00" }, { "name": "Free Economy Shipping", "cost": "0.00" } ]);
+      expect(result.filter).to.eql({ "name": "Next Day Air", "cost": "45.00", "_key": "nextDay" });
     });
   });
 });

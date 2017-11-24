@@ -119,7 +119,7 @@ divide(x1,x2,..xn) | Divide one or more values from a piped value
 eq(x1) | Returns true if piped value == x1
 filter(x1,x2,x3) | Filter a piped array of objects to include only those elements having a key x1 value that tests x2: ">", ">=", "=", "<=", or "!=" relative to x3.  Supports child dot `.` notation
 float(x1) | Float format a piped value with precision x1 (or 2 if x1 is not specified)
-get(x1) | Returns element x1 from a piped object, array, or string. May also be used without a piped value to reference field values in scope - useful when field names included spaces etc. Supports child dot `.` notation.  Returns current scope when used without parameter x1
+get(x1) | Returns element x1 from a piped object, array, or string. May also be used without a piped value to reference field values in scope - useful when field names included spaces etc. Supports child dot `.` notation.  Returns current scope when no parameters are passed.
 gt(x1) | Returns true if piped value is greater than value x1
 hash | Returns a md5 hash string based upon the piped value
 if(x1,x2) | Returns x1 if piped value is true, otherwise returns x2
@@ -145,7 +145,7 @@ split(x1) | Returns `.split(x1)` of the piped string.  Default split character i
 subtract(x1,x2,..xn) | Subtract one or more values from a piped value
 trim | Removes leading and trailing whitespace from the piped string
 uppercase | Returns `.toUpperCase()` of the piped string
-values | Formats piped value as an array. Objects are converted to an array of key values
+values | Formats piped value as an array. Objects are converted to an array of key values.  If the key values are themselves objects, the `_key` key is appended and references the parent key.
 
 ## Scope Modifiers
 
