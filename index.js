@@ -583,7 +583,7 @@ function parse(expr) {
       break;
       case '^':
         /** A carrot at the start of a new token is a root lookup */
-        if (token.val === '' && level[level.length - 1] !== '\'') {
+        if (token.val === '' && level.length === 0) {
           token.root = true;
           ++i; continue;
         }
