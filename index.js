@@ -477,9 +477,13 @@ function isTruthy(val) {
   
   switch (typeof val) {
     case 'string':
-      if (val.search(/^true|yes|t|y$/i) >= 0) {
+      if (+val > 0 || +val < 0) {
         truthy = true;
-      } else if (+val > 0 || +val < 0) {
+      } else if (val.search(/^true|yes|t|y$/i) >= 0) {      
+        truthy = true;
+      } else if (val.search(/^false|no|f|n$/i) >= 0) {
+        truthy = false;
+      } else if (val.length) {
         truthy = true;
       }
     break;
