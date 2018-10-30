@@ -391,6 +391,9 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'replace':    
       var expr = new RegExp(params[0], params[3] || '');
+      
+      // Ensure result is a string
+      result = typeof result === 'string' ? result : String(result);
           
       if ((result || '').match(expr)) {
         result = result.replace(expr, params[1]);

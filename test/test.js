@@ -480,13 +480,15 @@ describe('Filters', function() {
     before(function() { 
       map = { 
         "filter1": "'ACME super soakers are the worst' | replace('worst', 'best')",
-        "filter2": "'ACME super soakers are the worst' | replace('best', 'worst')"
+        "filter2": "'ACME super soakers are the worst' | replace('best', 'worst')",
+        "filter3": "Product.discount | replace('8', '0')"
       }; 
     });
 
     it('should return `.replace(x1, x2)` of the piped string', function() {
       expect(result.filter1).to.equal('ACME super soakers are the best');
       expect(result.filter2).to.equal('ACME super soakers are the worst');
+      expect(result.filter3).to.equal('0.00');
     });
   });
 

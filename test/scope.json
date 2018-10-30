@@ -31,7 +31,8 @@
       }
     ],
     "tags": "Mens,Shirt,Casual",
-    "weight": null
+    "weight": null,
+    "discount": 0.08
   },
   "EmbeddedJSON": "{ \"product\": \"test\" }"
 }  
