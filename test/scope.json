@@ -30,7 +30,8 @@
         ]
       }
     ],
-    "tags": "Mens,Shirt,Casual"
+    "tags": "Mens,Shirt,Casual",
+    "weight": null
   },
   "EmbeddedJSON": "{ \"product\": \"test\" }"
 }  

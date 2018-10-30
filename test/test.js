@@ -657,4 +657,17 @@ describe('References', function() {
       expect(result.filter).to.equal(2);
     });
   });
+
+  describe('#Null', function() {
+    before(function() {
+      map = {
+        "filter": "Product.weight.value | default('0') | float"
+      };
+    });
+
+    it('should handle attempts to access child keys of null values gracefully', function() {
+      expect(result.filter).to.equal(0.00);
+    });
+  });
+
 });

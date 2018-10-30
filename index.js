@@ -133,7 +133,7 @@ function resolve(expr, scope, rootScope, isKey) {
       case 'lookup':
         result = token.root ? rootScope : childScope;
         token.val.split('.').some(function(key) {
-          if (typeof result === 'object' && key in result) {
+          if (typeof result === 'object' && result !== null && key in result) {
             result = result[key];
           } else {
             result = isKey ? token.val : undefined;
