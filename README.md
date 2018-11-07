@@ -110,17 +110,18 @@ Function                        | Description
 add(x1,x2,..xn) | Add one or more values to a piped value
 and(x1,x2,..xn) | Boolean AND result of a piped value and one or more additional parameter values
 bool | Boolean format a piped value
-concat(x1,x2,..xn) | Return a string catenation of a piped value combined with one or more additional parameter values
+concat(x1,x2,..xn) | Return a string catenation of a piped value combined with one or more additional parameter values.  Call without parameters for toString() functionality.
 count | Count the number of keys, values, or characters in a piped object, array, or string
 date(x1) | Date format a piped value where x1 is one of: 'unix', 'javascript', 'json' (default)
 decrement | Reduces piped value by 1
 default(x1) | Returns x1 if the piped value is falsey
 divide(x1,x2,..xn) | Divide one or more values from a piped value
 eq(x1) | Returns true if piped value == x1
-filter(x1,x2,x3) | Filter a piped array of objects to include only those elements having a key x1 value that tests x2: ">", ">=", "=", "<=", or "!=" relative to x3.  Supports child dot `.` notation
+filter(x1) | Filter a piped array of objects or values to include only those x1 expression evaluates as true.  By default, x1 is evaluated against the local scope of each array item.  If the piped value is an array of objects, the expression will be evaluated against each object in the array.  If the piped value is an array of singletons, you may use get() to refer to the singleton value in your expressions.  The root `^` operator is also supported for access to non-local scope.
 float(x1) | Float format a piped value with precision x1 (or 2 if x1 is not specified)
-get(x1) | Returns element x1 from a piped object, array, or string. May also be used without a piped value to reference field values in scope - useful when field names included spaces etc. Supports child dot `.` notation.  Returns current scope when no parameters are passed.
+get(x1) | Returns element x1 from a piped object, array, or string. May also be used without a piped value to reference field values in scope - useful when field names included spaces etc. Supports child dot `.` notation.  Returns current scope when no parameters are passed as in `get()`.
 gt(x1) | Returns true if piped value is greater than value x1
+gte(x1) | Returns true if piped value is greater than or equal to value x1
 hash | Returns a md5 hash string based upon the piped value
 if(x1,x2) | Returns x1 if piped value is true, otherwise returns x2
 increment | Increases piped value by 1
@@ -129,6 +130,7 @@ join(x1) | Joins array elements from a piped value together into a string delimi
 json | Returns JSON.parse() on a piped value for embedded JSON
 keys | Returns an array of keys for the piped object
 lt(x1) | Returns true if piped value is less than value x1
+lte(x1) | Returns true if piped value is less than or equal to value x1
 lowercase | Returns `.toLowerCase()` of the piped string
 multiply(x1,x2,..xn) | Multiply one or more values with a piped value
 not(x1) | Returns the boolean opposite of x1

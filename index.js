@@ -118,7 +118,7 @@ function resolve(expr, scope, rootScope, isKey) {
       resolved = expr,
       childScope = scope,
       type = 'object';
-  
+      
   /** Iterate over each expression token returned by parse() */
   tokens.forEach(function(token) {
     var root;
@@ -182,8 +182,10 @@ function resolve(expr, scope, rootScope, isKey) {
   return { type: type, val: resolved, scope: childScope };
 }  
 
-function filter(type, params, scope, rootScope, result) {
-  params.forEach(function(param, idx) {
+function filter(type, paramsUnresolved, scope, rootScope, result) {
+  var params = [];
+
+  paramsUnresolved.forEach(function(param, idx) {
     params[idx] = resolve(param, scope, rootScope).val;
   });
 
@@ -249,33 +251,54 @@ function filter(type, params, scope, rootScope, result) {
       var filtered = [];
       
       ( Array.isArray(result) ? result : [ result ] ).forEach(function(item) {
-        var itemVal = lookup(params[0], item);
+        var arrParams = [];
+        var testVal;
         
-        if (!item || !itemVal) return;
-        
-        switch (params[1]) {
-          case '=':
-            if (itemVal == params[2]) filtered.push(item);
-          break;
-          case '!=':
-            if (itemVal != params[2]) filtered.push(item);
-          break;
-          case '>':
-            if (itemVal > params[2]) filtered.push(item);
-          break;
-          case '>=':
-            if (itemVal >= params[2]) filtered.push(item);
-          break;
-          case '<':
-            if (itemVal < params[2]) filtered.push(item);
-          break;
-          case '<=':
-            if (itemVal <= params[2]) filtered.push(item);
-          break;
-          default:
-            if (itemVal == params[2]) filtered.push(item);
-          break;
+        // The filter() filter will now use the local scope of each array item
+        // when resolving parameter expressions.  The ^ root scope operator is
+        // still available to access the non-local scope.  For backwards 
+        // compatibility, we check to see if the first parameter is in string
+        // format.  If it is, we employ legacy processing.  This usage is
+        // deprecated and will be removed at a future date.
+        // @TODO Should probably only have a single parameter passed to the 
+        // filter() function now that we are evaluating expressions.  Can use
+        // equality filters gt(), lt(), eq() for tests.  Need to add gte() and
+        // lte().
+        if (paramsUnresolved[0].match(/^'[^']*'$/)) {
+          arrParams = params;
+          testVal = item[params[0]];
+
+          switch (arrParams[1]) {
+            case '=':
+              if (testVal == arrParams[2]) filtered.push(item);
+            break;
+            case '!=':
+              if (testVal != arrParams[2]) filtered.push(item);
+            break;
+            case '>':
+              if (testVal > arrParams[2]) filtered.push(item);
+            break;
+            case '>=':
+              if (testVal >= arrParams[2]) filtered.push(item);
+            break;
+            case '<':
+              if (testVal < arrParams[2]) filtered.push(item);
+            break;
+            case '<=':
+              if (testVal <= arrParams[2]) filtered.push(item);
+            break;
+            default:
+              if (testVal == arrParams[2]) filtered.push(item);
+            break;
+          }
+        } else {                
+          paramsUnresolved.forEach(function(param, idx) {
+            arrParams[idx] = resolve(param, item, rootScope).val;
+          });
+          
+          arrParams[0] && filtered.push(item);
         }
+        
       });
       
       result = filtered;
@@ -293,6 +316,9 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'gt':
       result = result > params[0];
+    break;
+    case 'gte':
+      result = result >= params[0];
     break;
     case 'hash':
       var hashStr = JSON.stringify(result || '');
@@ -321,6 +347,9 @@ function filter(type, params, scope, rootScope, result) {
     break;
     case 'lt':
       return result < params[0];
+    break;
+    case 'lte':
+      return result <= params[0];
     break;
     case 'lowercase':
       result = result.toLowerCase();

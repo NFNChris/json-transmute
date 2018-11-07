@@ -38,7 +38,7 @@ describe('Scope Modifiers', function() {
           "@path": "@root",
           "'title'": "Product.title"
         },
-        "siblingArr[^Product.carriers | filter('name', '=', 'FedEx')]": {
+        "siblingArr[^Product.carriers | filter(name | eq('FedEx'))]": {
           "@root": "@path",
           "@path": "services",
           "^name name": "days"
@@ -262,7 +262,10 @@ describe('Filters', function() {
         "filter2": "Product.variants | filter('stock', '>=', '0')",
         "filter3": "Product.variants | filter('stock', '=', '0')",
         "filter4": "Product.variants | filter('stock', '<', '3')",
-        "filter5": "Product.variants | filter('stock', '<=', '3')"
+        "filter5": "Product.variants | filter('stock', '<=', '3')",
+        "filter6": "Product.variants | filter(color | count | lt(stock | int))",
+        "filter7": "Product.variants | filter(stock | int | eq(^Product.tags | split | count))",
+        "filter8": "Product.tags | split | filter(get() | count | gte('5'))"  
       }; 
     });
 
@@ -272,6 +275,9 @@ describe('Filters', function() {
       expect(result.filter3).to.eql([ { color: 'green', stock: '0' } ]);
       expect(result.filter4).to.eql([ { color: 'green', stock: '0' } ]);
       expect(result.filter5).to.eql([ { color: 'blue', stock: '3' }, { color: 'green', stock: '0' } ]);
+      expect(result.filter6).to.eql([ { color: 'red', stock: '5'} ]);
+      expect(result.filter7).to.eql([ { color: 'blue', stock: '3' } ]);
+      expect(result.filter8).to.eql([ 'Shirt', 'Casual' ]);
     });
   });
 
