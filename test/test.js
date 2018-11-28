@@ -432,6 +432,16 @@ describe('Filters', function() {
     });
   });
 
+  describe('#now()', function() {
+    before(function() { 
+      map = { "filter": "now('unix')" }; 
+    });
+
+    it('should return the current date where x1 is one of: "unix", "javascript", "json"', function() {
+      expect(result.filter).to.equal(new Date().getSeconds());
+    });
+  });
+
   describe('#or()', function() {
     before(function() { 
       map = { "filter": "'true' | or('false') | bool" }; 

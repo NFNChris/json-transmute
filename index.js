@@ -362,6 +362,20 @@ function filter(type, paramsUnresolved, scope, rootScope, result) {
     case 'not':
       result = !isTruthy(params[0]);
     break;    
+    case 'now':
+      switch (( params[0] || 'json').toLowerCase()) {
+        case 'unix':
+          result = new Date().getSeconds();
+        break;
+        case 'javascript':
+          result = new Date().getMilliseconds();
+        break;
+        case 'json':
+        default:
+          result = new Date().toJSON();
+        break;
+      }
+    break;
     case 'or':
       params.forEach(function(param) {
         result = result || param;
