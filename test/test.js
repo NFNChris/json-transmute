@@ -207,11 +207,15 @@ describe('Filters', function() {
 
   describe('#date()', function() {
     before(function() { 
-      map = { "filter": "'04/11/2017' | date" }; 
+      map = { 
+        "filter1": "'04/11/2017' | date",
+        "filter2": "'04/11/2017' | date('milliseconds')",
+      }; 
     });
 
     it('should date format a piped value where x1 is one of: "unix", "javascript", "json"', function() {
-      expect(result.filter).to.equal('2017-04-11T00:00:00.000Z');
+      expect(result.filter1).to.equal('2017-04-11T00:00:00.000Z');
+      expect(result.filter2).to.equal(1491868800000);
     });
   });
 
@@ -434,11 +438,11 @@ describe('Filters', function() {
 
   describe('#now()', function() {
     before(function() { 
-      map = { "filter": "now('unix')" }; 
+      map = { "filter": "now('milliseconds')" }; 
     });
 
     it('should return the current date where x1 is one of: "unix", "javascript", "json"', function() {
-      expect(result.filter).to.equal(new Date().getSeconds());
+      expect(result.filter).to.equal(new Date().getTime());
     });
   });
 

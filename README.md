@@ -112,7 +112,7 @@ and(x1,x2,..xn) | Boolean AND result of a piped value and one or more additional
 bool | Boolean format a piped value
 concat(x1,x2,..xn) | Return a string catenation of a piped value combined with one or more additional parameter values.  Call without parameters for toString() functionality.
 count | Count the number of keys, values, or characters in a piped object, array, or string
-date(x1) | Date format a piped value where x1 is one of: 'unix', 'javascript', or 'json' (default)
+date(x1) | Date format a piped value where x1 is one of: 'milliseconds' or 'json' (default)
 decrement | Reduces piped value by 1
 default(x1) | Returns x1 if the piped value is falsey
 divide(x1,x2,..xn) | Divide one or more values from a piped value
@@ -134,7 +134,7 @@ lte(x1) | Returns true if piped value is less than or equal to value x1
 lowercase | Returns `.toLowerCase()` of the piped string
 multiply(x1,x2,..xn) | Multiply one or more values with a piped value
 not(x1) | Returns the boolean opposite of x1
-now(x1) | Returns the current date (`new Date()`) where x1 is one of: 'unix', 'javascript', or 'json' (default)
+now(x1) | Returns the current date (`new Date()`) where x1 is one of: 'milliseconds', 'json' (default)
 or(x1,x2,..xn) | Boolean OR result of a piped value and one or more additional parameter values
 pluck(x1) | Returns an array of key values from a piped array of objects having x1 as a key
 pop | Returns the last element in an array
