@@ -85,6 +85,7 @@ Expressions enable us to extract data from our Scope object (source data) and tr
 
 Operator|Example       | Expression Handling
 --------|--------------|------------
+!|!expr | Ignore key.  Child object key value pairs will be assigned directly to the parent, and not under the prefixed key.
 '|'expr' | Not evaluated
 ^|^expr | Evaluated against Scope at the root / top level
 .|expr1.expr2 | Chainable direct child element selector. May be used to directly access array elements (e.g. `expr.0` or `expr.5`)

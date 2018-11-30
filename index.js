@@ -16,10 +16,17 @@ function transmute(scope, map, target, rootScope, skipKeys) {
     var mapIsArr = Array.isArray(map) ? true : false,
         mapItems = mapIsArr ? map : Object.keys(map || {}),
         pathIsArr = false,
+        ignoreKey = false,
         child = {};
         
     // Iterate over each map value (array element or object key)    
     mapItems.forEach(function(mapKey) {
+    
+      // Check if the ignore key '!' operator was specified at the beginning
+      // of the key.  If specified, data is mapped directly to the parent and
+      // not under the specified key.  Ignored when the map value is an array.
+      if (mapKey[0] === '!') ignoreKey = !mapIsArr;
+    
       var mapVal = mapIsArr ? mapKey : map[mapKey],
           keyOpts = mapIsArr ? {} : resolve(mapKey, scopeItem, rootScope, true),
           childVal = Array.isArray(mapVal) ? [] : {},
@@ -73,6 +80,12 @@ function transmute(scope, map, target, rootScope, skipKeys) {
       // Assign transmuted value to target object
       if (mapIsArr) {
         target.push(childVal);
+      } else if (ignoreKey 
+        && typeof target === 'object' && !Array.isArray(target) 
+        && typeof childVal === 'object' && Object.keys(childVal).length) {
+          Object.keys(childVal).forEach(function(childValKey) {
+            target[childValKey] = childVal[childValKey];
+          });
       } else {
         assign(Array.isArray(target) ? child : target, childVal, keyOpts);
       }
@@ -107,9 +120,7 @@ function assign(parent, val, keyOpts) {
       }
     } else if (!(keyPart in target)) {      
       target[keyPart] = {};
-    }
-     
-    target = target[keyPart];
+    }    
   });  
 }
 

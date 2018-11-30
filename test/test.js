@@ -21,6 +21,23 @@ describe('Parser', function() {
       expect(result.filter1).to.deep.equal({ "key{with-brackets}": "should work{}" });
     });
   });
+  
+  describe('Ignore Key operator', function() {
+    before(function() {
+      map = {
+        "filter1": { 
+          "!'colors'": {
+            "@path": "Product.variants",
+            "color": "stock"
+          }
+        }
+      };
+    });
+    
+    it('should assign child key values directly to the parent', function() {
+      expect(result.filter1).to.deep.equal({ 'blue': '3', 'green': '0', 'red': '5' });
+    });
+  });
 });
 
 describe('Scope Modifiers', function() {
@@ -442,7 +459,7 @@ describe('Filters', function() {
     });
 
     it('should return the current date where x1 is one of: "unix", "javascript", "json"', function() {
-      expect(result.filter).to.equal(new Date().getTime());
+      expect(parseInt(result.filter / 1000)).to.equal(parseInt(new Date().getTime() / 1000));
     });
   });
 
