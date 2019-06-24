@@ -518,7 +518,8 @@ describe('Filters', function() {
       map = { 
         "filter1": "'ACME super soakers are the worst' | replace('worst', 'best')",
         "filter2": "'ACME super soakers are the worst' | replace('best', 'worst')",
-        "filter3": "Product.discount | replace('8', '0')"
+        "filter3": "Product.discount | replace('8', '0')",
+        "filter4": "Product.special | replace('[\\.]+', '_', Product.special, 'g')"
       }; 
     });
 
@@ -526,6 +527,7 @@ describe('Filters', function() {
       expect(result.filter1).to.equal('ACME super soakers are the best');
       expect(result.filter2).to.equal('ACME super soakers are the worst');
       expect(result.filter3).to.equal('0.00');
+      expect(result.filter4).to.equal('text_with_special_characters');
     });
   });
 
