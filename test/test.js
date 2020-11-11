@@ -184,11 +184,15 @@ describe('Filters', function() {
 
   describe('#and()', function() {
     before(function() { 
-      map = { "filter": "'10' | and('true', 'yes')" }; 
+      map = { 
+        "filter1": "'10' | and('true', 'yes')", 
+        "filter2": "'0' | gt('0') | and('true')" 
+      }; 
     });
   
     it('should return the boolean AND result of a piped value and one or more additional parameter values', function() {
-      expect(result.filter).to.equal(true);
+      expect(result.filter1).to.equal(true);
+      expect(result.filter2).to.equal(false);
     });
   });
 
