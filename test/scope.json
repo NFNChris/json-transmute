@@ -32,7 +32,8 @@
     ],
     "tags": "Mens,Shirt,Casual",
     "weight": null,
-    "discount": 0.08
+    "discount": 0.08,
+    "special": "text.with.special.characters"
   },
   "EmbeddedJSON": "{ \"product\": \"test\" }"
 }  
