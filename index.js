@@ -208,15 +208,10 @@ function filter(type, paramsUnresolved, scope, rootScope, result) {
       });
     break;
     case 'and':
-      console.log('! AND', result);
-      result = isTruthy(result);
-    
-      console.log('# AND', result);
+      result = isTruthy(result);    
       params.forEach(function(param) {
-        console.log('AND', param, isTruthy(param));
         result = result && isTruthy(param);
       });
-      console.log('$ AND', result);
     break;
     case 'bool':
       result = isTruthy(result);
