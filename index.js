@@ -364,6 +364,14 @@ function filter(type, paramsUnresolved, scope, rootScope, result) {
     case 'lowercase':
       result = result.toLowerCase();
     break;
+    case 'match':
+      var expr = new RegExp(params[ 0 ], params[ 1 ] || 'i');
+      
+      // Ensure result is a string
+      result = typeof result === 'string' ? result : String(result);
+          
+      result = (result || '').match(expr);      
+    break;
     case 'multiply':
       params.forEach(function(param) {
         result = result * param;

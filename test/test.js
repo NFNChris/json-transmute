@@ -437,6 +437,20 @@ describe('Filters', function() {
     });
   });
 
+  describe('#match()', function() {
+    before(function() { 
+      map = { 
+        "filter": "Product.title | match('^acme') | pop",
+      }; 
+    });
+
+    it('should return `.match(x1, x2)` of the piped string', function() {
+      expect(result.filter).to.equal('ACME');
+    });
+  });
+
+
+
   describe('#multiply()', function() {
     before(function() { 
       map = { "filter": "'1' | multiply('2', '5')" }; 

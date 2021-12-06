@@ -133,6 +133,7 @@ keys | Returns an array of keys for the piped object
 lt(x1) | Returns true if piped value is less than value x1
 lte(x1) | Returns true if piped value is less than or equal to value x1
 lowercase | Returns `.toLowerCase()` of the piped string
+match(x1, x2) | Returns `.match(x1[, x2])` of the piped string (in array format).  Default value for x2 if not provided is 'i'.
 multiply(x1,x2,..xn) | Multiply one or more values with a piped value
 not(x1) | Returns the boolean opposite of x1
 now(x1) | Returns the current date (`new Date()`) where x1 is one of: 'milliseconds', 'json' (default)
