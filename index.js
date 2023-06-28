@@ -514,6 +514,9 @@ function filter(type, paramsUnresolved, scope, rootScope, result) {
       
       result = values;
     break;
+	case "tostring":
+ 		result = result.toString();
+ 		break;
     default:
       throw new Error('Unknown filter type: ' + type);
     break;
@@ -825,5 +828,4 @@ function parse(expr) {
   
   return tokens;
 }
-
 
